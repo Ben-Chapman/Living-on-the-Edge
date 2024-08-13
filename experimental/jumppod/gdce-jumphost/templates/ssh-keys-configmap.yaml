@@ -1,0 +1,13 @@
+# Copyright 2024 Google. This software is provided as-is, without warranty or
+# representation for any use or purpose. Your use of it is subject to your agreement
+# with Google.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: authorized-ssh-keys
+  namespace: {{ .Values.namespace }}
+data:
+  authorized_keys: |
+    # foo@bar.com
+    ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCYYfLbYSFEe/dBA2VYTzaEfeJR2uS2YN6mR7wDUoPSWnMe+hnUMqOFdDGXgbyKNtxxIsJ0euPYSaxrZzHLJoPVzqojDvOLXjhk9FqthDcrS/4CUkboQxLzqBSQRAuhnocRVDhdLaVgzIi++I0O7iv8E6EOKeFgYVYo287gqKWcxdVNF+VM/USc8yd+WpyTW9cDp2/upk8JXv1nagjquvme1xI3ZGFGFOhLRR9F0bePBC7WvFARAf7RUc9nZq50pM8Gc1Yan7SQuapWAJwAB9iP+/27efalJv8iftelKPiJkHfjlj/WL8qeNcQ3jBYebDtJybV72Ssr8ngNqtyyKcc/YKewmdmqvfLjn26Hq2LWEAsE8/Pg6f8jdCRLb53VEMsAG5fGLbk0gHY1FsZwx7TQEIGF1UU3X+Wsjq+yt1Igq3OYxudyooDtDXC0clvMTadc991oFci6Zls2JyTlxs+BR4/C4PMdJZPEJt4yIp/nbiYUsV/w/EqTy55m/cUXm+c= foo@3ebc083aca8b

@@ -1,0 +1,11 @@
+# Copyright 2024 Google. This software is provided as-is, without warranty or
+# representation for any use or purpose. Your use of it is subject to your agreement
+# with Google.
+
+apiVersion: networking.gke.io/v1
+kind: NetworkInterface
+metadata:
+  name: "{{ .Values.name }}-networkinterface"
+  namespace: {{ .Values.namespace }}
+spec:
+  {{- toYaml .Values.networkInterfaceSpec | nindent 2 }}

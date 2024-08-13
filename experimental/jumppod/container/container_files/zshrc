@@ -1,0 +1,48 @@
+###
+# Shell customizations for the default jump user account
+###
+
+# Define a reasonable default prompt. Results in:
+# cluster-name HH:MM:SS (Timezone) /current/working/directory %
+setopt PROMPT_SUBST
+PROMPT='%F{red}$CLUSTER_NAME%f %F{green}%* ($(date +%Z))%f %F{blue}%~%f %# '
+
+# Load the builtin prompts as another option
+# $ prompt -p to preview and $ prompt <theme name> to apply
+autoload -U promptinit && promptinit
+
+alias k=kubectl
+alias kv='kubectl virt '
+# Used to easily switch between k8s namespaces.
+# Usage: kn some-namespace or kn default
+alias kn='kubectl config set-context --current --namespace '
+alias ll='ls -la'
+
+# Set the default $EDITOR to Vim, and set Emacs keymap for the shell prompt
+export EDITOR=/usr/bin/vim
+bindkey -e
+
+###
+# The following should rarely need to be modified. Proceed with caution.
+###
+
+# Setting env variables for kubectl to use.
+export KUBERNETES_SERVICE_HOST="kubernetes.default.svc"
+export KUBERNETES_SERVICE_PORT=443
+export POD_NAMESPACE=default
+
+# Configure ZSH history
+HISTFILE=~/.zsh_history
+HISTSIZE=10000
+SAVEHIST=1000
+setopt INC_APPEND_HISTORY # Write to the history file immediately, not when the shell exits.
+
+# Configure kubectl shell autocompletion
+autoload -Uz compinit
+compinit
+source <(kubectl completion zsh)
+
+# Obtain the name of the current cluster, which is used in the command prompt.
+# Background the process to return input control to the user ~immediately, so we're
+# not waiting on this kubectl command to return
+export CLUSTER_NAME=$(kubectl get nodes -o=jsonpath='{range .items[0]}{.metadata.labels.edgecontainer\.googleapis\.com/rack}{end}' |xargs) &> /dev/null

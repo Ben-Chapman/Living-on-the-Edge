@@ -1,0 +1,20 @@
+# Copyright 2024 Google. This software is provided as-is, without warranty or
+# representation for any use or purpose. Your use of it is subject to your agreement
+# with Google.
+
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: gdce-jumphost
+  labels:
+    app: gdce-jumphost
+  name: gdce-jumphost-service
+spec:
+  ports:
+  - name: ssh
+    port: 22
+    protocol: TCP
+    targetPort: 22
+  selector:
+    app: gdce-jumphost
+  type: ClusterIP

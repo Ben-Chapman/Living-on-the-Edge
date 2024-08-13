@@ -1,0 +1,20 @@
+set nu				                  " Display line numbers
+set nocompatible                " Avoid legacy silliness.
+set backspace=indent,eol,start  " Make backspace sane.
+set cursorline                  " Highlight the current line.
+set backup                      " Be safe.
+set history=1000                " Remember a lot.
+set incsearch                   " Search incrementally as I type.
+set showcmd                     " Show the last command.
+set showmatch                   " When a bracket is typed show its match.
+set smartcase                   " Be smart about when case sensitivity matters.
+set smarttab                    " Only respect shiftwidth for code indents.
+set undofile                    " Saves undo history across sessions.
+set tabstop=2                   " How many spaces to indent with the tab key
+set softtabstop=2               " Must match tabstop
+set expandtab			              " Enter spaces when tab is pressed
+set shiftwidth=2		            " Spacing for indents
+
+set backupdir=/tmp//
+set undodir=/tmp//
+set directory=/tmp//

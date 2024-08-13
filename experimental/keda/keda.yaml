@@ -1,0 +1,183 @@
+###
+# GCP Setup
+###
+
+# gcloud iam service-accounts create keda-storage-user \
+#     --project=living-on-the-edge
+
+# gcloud projects add-iam-policy-binding living-on-the-edge \
+#     --member "serviceAccount:keda-storage-user@living-on-the-edge.iam.gserviceaccount.com" \
+#     --role "roles/storage.objectUser" \
+#     --role "roles/iam.workloadIdentityUser" \
+#     --role "roles/iam.serviceAccountTokenCreator"
+
+# gcloud iam service-accounts add-iam-policy-binding keda-storage-user@living-on-the-edge.iam.gserviceaccount.com \
+#     --role roles/iam.workloadIdentityUser \
+#     --role "roles/storage.objectUser" \
+#     --role "roles/iam.serviceAccountTokenCreator" \
+#     --member "serviceAccount:living-on-the-edge.svc.id.goog[keda-test/keda-storage-user]"
+
+# gcloud iam service-accounts add-iam-policy-binding keda-storage-user@living-on-the-edge.iam.gserviceaccount.com \
+#     --role roles/iam.workloadIdentityUser \
+#     --role "roles/storage.objectUser" \
+#     --role "roles/iam.serviceAccountTokenCreator" \
+#     --member "serviceAccount:living-on-the-edge.svc.id.goog[keda/keda-operator]"
+
+# gcloud storage buckets add-iam-policy-binding gs://benc-keda-test \
+#     --role=roles/storage.objectViewer \
+#     --member=principal://iam.googleapis.com/projects/216686990519/locations/global/workloadIdentityPools/living-on-the-edge.svc.id.goog/subject/ns/keda-test/sa/keda-storage-user \
+#     --condition=None
+
+# kubectl annotate serviceaccount keda-storage-user \
+#     --namespace keda-test \
+#     iam.gke.io/gcp-service-account=keda-storage-user@living-on-the-edge.iam.gserviceaccount.com
+
+# kubectl create secret generic storage-user-secret --from-file service-account.json
+
+
+# apiVersion: v1
+# kind: Namespace
+# metadata:
+#   name: keda-test
+
+# ---
+
+# apiVersion: v1
+# kind: ServiceAccount
+# metadata:
+#   name: keda-storage-user
+#   namespace: keda-test
+#   annotations:
+#     iam.gke.io/gcp-service-account: keda-storage-user@living-on-the-edge.iam.gserviceaccount.com
+# ---
+# Patch this default SA with the WI annotation
+# apiVersion: v1
+# kind: ServiceAccount
+# metadata:
+#   creationTimestamp: "2024-05-01T17:22:42Z"
+#   labels:
+#     app.kubernetes.io/name: keda-operator
+#     app.kubernetes.io/part-of: keda-operator
+#     app.kubernetes.io/version: 2.14.0
+#   name: keda-operator
+#   namespace: keda
+#   annotations:
+#     iam.gke.io/gcp-service-account: keda-storage-user@living-on-the-edge.iam.gserviceaccount.com
+
+---
+
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: keda-trigger-auth
+spec:
+  podIdentity:
+    provider: gcp
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gcloud-script-configmap
+data:
+  gcloud-delete.sh: |
+    #!/bin/bash
+    while true; do
+      available_files=($(gsutil ls gs://benc-keda-test/));
+      available_file_count=${#available_files[@]}
+
+      if [ ${available_file_count} -gt 0 ]; then
+        echo "Found ${available_file_count} files in the storage bucket"
+
+        # Select a random index location from the array
+        random_index=$((RANDOM % ${available_file_count}));
+        file_to_remove=${available_files[$random_index]}
+
+        gsutil rm ${file_to_remove};
+        echo "Done!";
+        else
+          echo "No files found in the storage bucket";
+      fi
+
+      sleep 60
+    done
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: keda-gcs-deployment
+  name: keda-gcs-deployment
+  namespace: keda-test
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: keda-gcs-deployment
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: keda-gcs-deployment
+    spec:
+      serviceAccountName: keda-storage-user
+      containers:
+      - image: google/cloud-sdk:alpine
+        imagePullPolicy: IfNotPresent
+        name: gcloud
+        resources:
+          requests:
+            cpu: 500m
+            memory: 250Mi
+          limits:
+            cpu: 5000m
+            memory: 1Gi
+        command: ["/bin/bash"]
+        args: ["/gcloud/gcloud-delete.sh"]
+        volumeMounts:
+        - name: gcloud-script-volume
+          mountPath: /gcloud
+          readOnly: true
+      volumes:
+      - name: gcloud-script-volume
+        configMap:
+          defaultMode: 0700
+          name: gcloud-script-configmap
+
+---
+
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: keda-gcs-scaled-object
+  namespace: keda-test
+  annotations:
+    autoscaling.keda.sh/paused: "false"                      # Optional. Use to pause autoscaling of objects explicitly
+spec:
+  scaleTargetRef:
+    kind:          Deployment               # Optional. Default: Deployment
+    name:          keda-gcs-deployment                # Mandatory. Must be in the same namespace as the ScaledObject
+  pollingInterval:  10
+  cooldownPeriod:   60                                     # Optional. Default: 300 seconds
+  # idleReplicaCount: 0                                       # Optional. Default: ignored, must be less than minReplicaCount
+  minReplicaCount:  0                                       # Optional. Default: 0
+  maxReplicaCount:  100                                     # Optional. Default: 100
+  fallback:                                                 # Optional. Section to specify fallback options
+    failureThreshold: 3                                     # Mandatory if fallback section is included
+    replicas: 6                                             # Mandatory if fallback section is included
+  triggers:
+  - type: gcp-storage
+    authenticationRef:
+        name: keda-trigger-auth
+    metadata:
+      bucketName: benc-keda-test
+      targetObjectCount: '10'  # Average target value to trigger scaling actions.
+      activationTargetObjectCount: '5' #  Target value for activating the scaler.
+      maxBucketItemsToScan: '1000'

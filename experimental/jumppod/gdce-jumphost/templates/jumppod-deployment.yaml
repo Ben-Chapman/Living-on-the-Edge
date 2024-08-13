@@ -1,0 +1,64 @@
+# Copyright 2024 Google. This software is provided as-is, without warranty or
+# representation for any use or purpose. Your use of it is subject to your agreement
+# with Google.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels: {{- toYaml .Values.deploymentLabels | nindent 4 }}
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+    {{- toYaml .Values.selectorMatchLabels | nindent 6 }}
+      # app: jumppod
+  template:
+    metadata:
+      labels:
+        {{- toYaml .Values.selectorMatchLabels | nindent 8 }}
+        # app: jumppod
+      annotations:
+        {{- toYaml .Values.podAnnotations | nindent 8 }}
+        # networking.gke.io/default-interface: eth1
+        # networking.gke.io/interfaces: |
+        #   [
+        #     {"interfaceName":"eth0","network":"pod-network"},
+        #     {"interfaceName":"eth1","interface":"gdce-jumphost-networkinterface"}
+        #   ]
+    spec:
+      serviceAccountName: {{ .Values.serviceAccountName }}
+      imagePullSecrets:
+        - name: {{ .Values.image.pullSecret }}
+      containers:
+      - name: {{ .Values.name }}
+        image: "{{ .Values.image.repository}}{{ .Values.image.name}}:{{ .Values.image.tag}}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+        # Define the timezone for this pod.
+        - name: TZ
+          value: {{ .Values.containerTimezone }}
+        resources:
+          requests:
+            cpu: 500m
+            memory: 250Mi
+          limits:
+            cpu: 5000m
+            memory: 1Gi
+        volumeMounts:
+        - name: ssh-keys
+          # Mount the authorized_keys ConfigMap into the Pod
+          mountPath: "/home/{{ .Values.jumphostUsername }}/.ssh/authorized_keys"
+          subPath: authorized_keys
+      volumes:
+      - name: ssh-keys
+        configMap:
+          name: authorized-ssh-keys
+          defaultMode: 0600
+          items:
+          - key: authorized_keys
+            path: authorized_keys
+      securityContext:
+          fsGroup: 500

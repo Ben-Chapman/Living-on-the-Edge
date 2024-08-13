@@ -1,0 +1,35 @@
+# Source: https://pkg.go.dev/k8s.io/Kubernetes/test/images/logs-generator
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logs-generator-deployment
+  namespace: default
+  labels:
+    app: logs-generator
+spec:
+  replicas: 1
+  restart: Never
+  selector:
+    matchLabels:
+      app: logs-generator
+  template:
+    metadata:
+      labels:
+        app: logs-generator
+      name: logs-generator
+    spec:
+      containers:
+      - name: logs-generator
+        image: gcr.io/google_containers/logs-generator:v0.1.1
+        env:
+          - name: LOGS_GENERATOR_LINES_TOTAL
+            value: "1000"
+          - name: LOGS_GENERATOR_DURATION
+            value: "1m"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "1000m"

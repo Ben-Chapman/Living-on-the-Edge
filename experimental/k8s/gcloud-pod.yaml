@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gcloud
+  namespace: default
+  labels:
+    app: gcloud
+spec:
+  # serviceAccountName: foo
+  containers:
+  - image: google/cloud-sdk:slim  # Ubuntu-based image. sdk:alpine is also available
+    imagePullPolicy: IfNotPresent
+    name: gcloud
+    resources:
+      requests:
+        cpu: 500m
+        memory: 250Mi
+      limits:
+        cpu: 5000m
+        memory: 1Gi
+    command:
+    - sleep
+    - infinity
+  restartPolicy: Always

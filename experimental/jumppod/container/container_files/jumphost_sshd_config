@@ -1,0 +1,6 @@
+Match User jump
+  ChallengeResponseAuthentication yes
+  PasswordAuthentication no
+	X11Forwarding yes
+	AllowTcpForwarding yes
+	PermitTTY yes

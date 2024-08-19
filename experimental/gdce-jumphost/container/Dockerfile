@@ -61,7 +61,10 @@ RUN adduser \
 # For more detail, man sshd
 RUN ssh-keygen -A \
   && sed -i -e \
-  "s/#PermitRootLogin prohibit-password/PermitRootLogin no/g;s/#StrictModes yes/StrictModes no/g;\$aAllowUsers $JUMPHOST_USERNAME" \
+  "s/#PermitRootLogin prohibit-password/PermitRootLogin no/g; \
+   s/#StrictModes yes/StrictModes no/g; \
+   s/#PasswordAuthentication yes/PasswordAuthentication no/g; \
+   \$aAllowUsers $JUMPHOST_USERNAME" \
   /etc/ssh/sshd_config
 
 # Symlink vi to vim, create a .ssh directory and recursively chown the home directory

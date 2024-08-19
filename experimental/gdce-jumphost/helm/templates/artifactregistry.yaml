@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: Secret
-metadata:
-  name: artifact-registry
-  namespace: {{ .Values.namespace }}
-data:
-  .dockerconfigjson: ewogICJjcmVkSGVscGVycyI6IHsKICAgICJnY3IuaW8iOiAiZ2Nsb3VkIiwKICAgICJ1cy5nY3IuaW8iOiAiZ2Nsb3VkIiwKICAgICJldS5nY3IuaW8iOiAiZ2Nsb3VkIiwKICAgICJhc2lhLmdjci5pbyI6ICJnY2xvdWQiLAogICAgInN0YWdpbmctazhzLmdjci5pbyI6ICJnY2xvdWQiLAogICAgIm1hcmtldHBsYWNlLmdjci5pbyI6ICJnY2xvdWQiLAogICAgInVzLWNlbnRyYWwxLWRvY2tlci5wa2cuZGV2IjogImdjbG91ZCIsCiAgICAidXMtZWFzdDQtZG9ja2VyLnBrZy5kZXYiOiAiZ2Nsb3VkIgogIH0KfQ==
-type: kubernetes.io/dockerconfigjson

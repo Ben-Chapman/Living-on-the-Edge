@@ -5,16 +5,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: gdce-jumphost
-  labels:
-    app: gdce-jumphost
-  name: gdce-jumphost-service
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+  annotations:
+    metallb.universe.tf/loadBalancerIPs: 10.223.172.245
 spec:
+  type: LoadBalancer
   ports:
   - name: ssh
     port: 22
     protocol: TCP
     targetPort: 22
   selector:
-    app: gdce-jumphost
-  type: ClusterIP
+    app: {{ .Values.name }}

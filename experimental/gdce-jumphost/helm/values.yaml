@@ -18,7 +18,7 @@ image:
   name: *appname
   tag: experimental
   pullPolicy: Always
-  pullSecret: jfrog-dev-secret
+  pullSecret: artifact-registry
 
 
 # Labels
@@ -32,25 +32,8 @@ podLabels:
  app: *appname
 
 
-# Annotations
-podAnnotations:
-  networking.gke.io/default-interface: eth1
-  networking.gke.io/interfaces: |
-    [
-      {"interfaceName":"eth0","network":"pod-network"},
-      {"interfaceName":"eth1","interface":"gdce-jumphost-networkinterface"}
-    ]
-
-
 # Cluster RBAC
 rbac:
   # *appName- will be prepended to these keys in a template.
   clusterRoleNameSuffix: cluster-viewer
   clusterRoleBindingSuffix: clusterrolebinding
-
-
-# GDCE NetworkInterfaces
-networkInterfaceSpec:
-  networkName: store-vlan-2100
-  ipAddresses: [10.159.172.101/24]
-  macAddress: 60:e3:cb:1b:9e:9e

@@ -6,11 +6,14 @@ FROM alpine:latest
 
 # If this username is changed, update the username to match in the Helm values.yaml file
 # and update the username in container_files/sshd_config
-ARG JUMPPOD_USERNAME=jump
-ARG JUMPPOD_HOMEDIR=/home/$JUMPPOD_USERNAME
+ARG JUMPHOST_USERNAME=jump
+ARG JUMPHOST_HOMEDIR=/home/$JUMPHOST_USERNAME
 
-ARG KUBECTL_VERSION=1.30.0
-ARG VIRTCTL_VERSION=1.2.0
+# For the latest stable version:
+# kubectl: curl -Ls https://dl.k8s.io/release/stable.txt
+# virtctl: curl https://storage.googleapis.com/kubevirt-prow/release/kubevirt/kubevirt/stable.txt
+ARG KUBECTL_VERSION=1.31.0
+ARG VIRTCTL_VERSION=1.3.0
 
 # Install some useful packages including:
 # ISC DNS tools (bind-tools)
@@ -34,19 +37,22 @@ RUN curl -LO https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubec
   && install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl \
   && install -o root -g root -m 0755 kubectl-virt /usr/local/bin/kubectl-virt
 
-# Add a non-root user ($JUMPPOD_USERNAME) and set a random password. The password is not
+# Add a non-root user ($JUMPHOST_USERNAME) and set a random password. The password is not
 # used but is required to enable SSH login.
 RUN adduser \
   --gecos "K8s Jump Pod" \
   --shell /bin/zsh \
   --uid 500 \
-  $JUMPPOD_USERNAME \
+  --disabled-password \
+  $JUMPHOST_USERNAME \
   # Set a password derived from /dev/urandom
-  && P=$(head -c 32 /dev/urandom | base64); echo -e "${P}\n${P}" | passwd $JUMPPOD_USERNAME
+  && P=$(head -c 32 /dev/urandom | base64); echo -e "${P}\n${P}" | passwd $JUMPHOST_USERNAME
 
 
-# Generate ssh host keys, prevent root login through SSH and do not check file modes
-# and ownership of sshd-related files before accepting login.
+# Generate ssh host keys, prevent root login through SSH, do not check file modes
+# and ownership of sshd-related files before accepting login, and only allow login for
+# the $JUMPHOST_USERNAME user.
+#
 # We're mounting a K8s ConfigMap as a volume in the Pod, and there are limited controls
 # within K8s to mount this ConfigMap with the sshd desired dir/file permissions.
 # sshd StrictMode was designed to protect permission misconfiguration for user config
@@ -55,22 +61,23 @@ RUN adduser \
 # For more detail, man sshd
 RUN ssh-keygen -A \
   && sed -i -e \
-  's/#PermitRootLogin prohibit-password/PermitRootLogin no/g;s/#StrictModes yes/StrictModes no/g' \
+  "s/#PermitRootLogin prohibit-password/PermitRootLogin no/g;s/#StrictModes yes/StrictModes no/g;\$aAllowUsers $JUMPHOST_USERNAME" \
   /etc/ssh/sshd_config
 
 # Symlink vi to vim, create a .ssh directory and recursively chown the home directory
 RUN ln -fs /usr/bin/vim /usr/bin/vi \
-  && mkdir -m 700 $JUMPPOD_HOMEDIR/.ssh \
-  && chown -R $JUMPPOD_USERNAME:$JUMPPOD_USERNAME $JUMPPOD_HOMEDIR
+  && mkdir -m 700 $JUMPHOST_HOMEDIR/.ssh \
+  && ln -s -f $JUMPHOST_HOMEDIR/.zshrc $JUMPHOST_HOMEDIR/.zshenv \
+  && chown -R $JUMPHOST_USERNAME:$JUMPHOST_USERNAME $JUMPHOST_HOMEDIR
 
-# Copy in our sshd customizations for the $JUMPPOD_USERNAME user
+# Copy in our sshd customizations for the $JUMPHOST_USERNAME user
 COPY container_files/jumphost_sshd_config /etc/ssh/sshd_config.d/jump.conf
 
 # Enable a customized ZSH profile
-COPY --chown=$JUMPPOD_USERNAME:$JUMPPOD_USERNAME container_files/zshrc $JUMPPOD_HOMEDIR/.zshrc
+COPY --chown=$JUMPHOST_USERNAME:$JUMPHOST_USERNAME container_files/zshrc $JUMPHOST_HOMEDIR/.zshrc
 
 # Enable a reasonable default Vim config
-COPY --chown=$JUMPPOD_USERNAME:$JUMPPOD_USERNAME container_files/vimrc $JUMPPOD_HOMEDIR/.vimrc
+COPY --chown=$JUMPHOST_USERNAME:$JUMPHOST_USERNAME container_files/vimrc $JUMPHOST_HOMEDIR/.vimrc
 
 # Message of the day, presented when logging into this container
 COPY container_files/motd /etc/motd

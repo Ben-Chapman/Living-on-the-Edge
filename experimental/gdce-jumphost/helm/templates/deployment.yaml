@@ -3,7 +3,7 @@
 # with Google.
 
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   labels: {{- toYaml .Values.deploymentLabels | nindent 4 }}
   name: {{ .Values.name }}
@@ -14,20 +14,12 @@ spec:
   selector:
     matchLabels:
     {{- toYaml .Values.selectorMatchLabels | nindent 6 }}
-      # app: jumppod
   template:
     metadata:
       labels:
         {{- toYaml .Values.selectorMatchLabels | nindent 8 }}
-        # app: jumppod
       annotations:
         {{- toYaml .Values.podAnnotations | nindent 8 }}
-        # networking.gke.io/default-interface: eth1
-        # networking.gke.io/interfaces: |
-        #   [
-        #     {"interfaceName":"eth0","network":"pod-network"},
-        #     {"interfaceName":"eth1","interface":"gdce-jumphost-networkinterface"}
-        #   ]
     spec:
       serviceAccountName: {{ .Values.serviceAccountName }}
       imagePullSecrets:

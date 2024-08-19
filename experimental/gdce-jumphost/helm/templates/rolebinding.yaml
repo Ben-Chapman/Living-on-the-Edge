@@ -11,6 +11,8 @@ subjects:
   name: {{ .Values.serviceAccountName }}
   namespace: {{ .Values.namespace }}
 roleRef:
-  kind: ClusterRole
-  name: "{{ .Values.name }}-{{ .Values.rbac.clusterRoleNameSuffix }}"
   apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  # Various other permissions are aggregated into this view default role.
+  # See cluster-role.yaml for detail
+  name: view

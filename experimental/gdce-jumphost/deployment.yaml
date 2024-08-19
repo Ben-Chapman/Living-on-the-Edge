@@ -1,0 +1,189 @@
+---
+# Source: GDCE-Jumphost/templates/namespace.yaml
+# Copyright 2024 Google. This software is provided as-is, without warranty or
+# representation for any use or purpose. Your use of it is subject to your agreement
+# with Google.
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gdce-jumphost
+---
+# Source: GDCE-Jumphost/templates/serviceaccount.yaml
+# Copyright 2024 Google. This software is provided as-is, without warranty or
+# representation for any use or purpose. Your use of it is subject to your agreement
+# with Google.
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: gdce-jumphost
+  namespace: gdce-jumphost
+---
+# Source: GDCE-Jumphost/templates/artifactregistry.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: artifact-registry
+  namespace: gdce-jumphost
+data:
+  .dockerconfigjson: ewogICJjcmVkSGVscGVycyI6IHsKICAgICJnY3IuaW8iOiAiZ2Nsb3VkIiwKICAgICJ1cy5nY3IuaW8iOiAiZ2Nsb3VkIiwKICAgICJldS5nY3IuaW8iOiAiZ2Nsb3VkIiwKICAgICJhc2lhLmdjci5pbyI6ICJnY2xvdWQiLAogICAgInN0YWdpbmctazhzLmdjci5pbyI6ICJnY2xvdWQiLAogICAgIm1hcmtldHBsYWNlLmdjci5pbyI6ICJnY2xvdWQiLAogICAgInVzLWNlbnRyYWwxLWRvY2tlci5wa2cuZGV2IjogImdjbG91ZCIsCiAgICAidXMtZWFzdDQtZG9ja2VyLnBrZy5kZXYiOiAiZ2Nsb3VkIgogIH0KfQ==
+type: kubernetes.io/dockerconfigjson
+---
+# Source: GDCE-Jumphost/templates/ssh-keys-configmap.yaml
+# Copyright 2024 Google. This software is provided as-is, without warranty or
+# representation for any use or purpose. Your use of it is subject to your agreement
+# with Google.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: authorized-ssh-keys
+  namespace: gdce-jumphost
+data:
+  # The content of authorized_keys should be a valid authorized_keys file format.
+  # See https://linux.die.net/man/8/sshd for detail.
+  authorized_keys: |
+    # thisisben@
+    ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC3pRUQid0asz2/BzgzBpxSQuM5hc16StTrLZPSlwMrSVZ2gbfxdJqEv5tEB/e6tkc9dpqdFK6UHK0SQMihqhdhlMxMqkTccJ2OdpxgV7x8KtsrKN2GnFzaqalXjdFfxPBETJmXXfYkCFo/pXcL2hQCpIErki+3elX6FnN1TgNYFuJJ39VyZ0gBc2dl7F9ifb2nPj5fRCU0vLt+HVSm6euHgjHGIPhObdUwrUKRFBGYaB918iwSw890oIppRAKfXMFA50I1aUH126m6Ipvi0qQLHHHhWA10KBKREpOnWuH0CTk2gPYBqcEdjzc+/HjzutW1rkh/piPSekEG87GanaqaD1KHfLHOmsX7TAyYIPHCJMwVEGcj3Lb/sXYA2e1oy81VDsByyOW72UFQ/KL7m+MBzryziLVCxjzh2QT7OZCWGWBIU8/3SJTLABdBg+43hExQ9eLaIJyuPGk7OAkuC0Ofcp2mSFsxlKTyyXjHXrIV0VoijdnJOVRb376h9XFNL5k= benchapman@benchapman1
+---
+# Source: GDCE-Jumphost/templates/cluster-role.yaml
+# Copyright 2024 Google. This software is provided as-is, without warranty or
+# representation for any use or purpose. Your use of it is subject to your agreement
+# with Google.
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: "gdce-jumphost-cluster-viewer"
+  labels:
+    # Add these permissions to the "view" default role.
+    rbac.authorization.k8s.io/aggregate-to-view: "true"
+rules:
+- apiGroups:
+    - ""
+  resources:
+    - "*"
+  verbs:
+    - "get"
+    - "list"
+    - "watch"
+
+- apiGroups:
+    - ""
+  resources:
+    - pods/portforward
+    - pods/exec
+  verbs:
+    - "create"
+
+- apiGroups:
+    - "subresources.kubevirt.io"
+  resources:
+    - virtualmachineinstances/console
+    - virtualmachineinstances/ssh
+    - virtualmachineinstances/vnc
+    - virtualmachineinstances/portforward
+  verbs:
+    - "get"
+---
+# Source: GDCE-Jumphost/templates/rolebinding.yaml
+# Copyright 2024 Google. This software is provided as-is, without warranty or
+# representation for any use or purpose. Your use of it is subject to your agreement
+# with Google.
+
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: "gdce-jumphost-clusterrolebinding"
+subjects:
+- kind: ServiceAccount
+  name: gdce-jumphost
+  namespace: gdce-jumphost
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  # Various other permissions are aggregated into this view default role.
+  # See cluster-role.yaml for detail
+  name: view
+---
+# Source: GDCE-Jumphost/templates/service.yaml
+# Copyright 2024 Google. This software is provided as-is, without warranty or
+# representation for any use or purpose. Your use of it is subject to your agreement
+# with Google.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: gdce-jumphost
+  namespace: gdce-jumphost
+  annotations:
+    metallb.universe.tf/loadBalancerIPs: 10.223.172.245
+spec:
+  type: LoadBalancer
+  ports:
+  - name: ssh
+    port: 22
+    protocol: TCP
+    targetPort: 22
+  selector:
+    app: gdce-jumphost
+---
+# Source: GDCE-Jumphost/templates/deployment.yaml
+# Copyright 2024 Google. This software is provided as-is, without warranty or
+# representation for any use or purpose. Your use of it is subject to your agreement
+# with Google.
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: gdce-jumphost
+  name: gdce-jumphost
+  namespace: gdce-jumphost
+spec:
+  replicas: 1
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: gdce-jumphost
+  template:
+    metadata:
+      labels:
+        app: gdce-jumphost
+      annotations:
+        null
+    spec:
+      serviceAccountName: gdce-jumphost
+      imagePullSecrets:
+        - name: artifact-registry
+      containers:
+      - name: gdce-jumphost
+        image: "us-central1-docker.pkg.dev/living-on-the-edge/gdce-repo/gdce-jumphost/gdce-jumphost:experimental"
+        imagePullPolicy: Always
+        env:
+        # Define the timezone for this pod.
+        - name: TZ
+          value: America/New_York
+        resources:
+          requests:
+            cpu: 500m
+            memory: 250Mi
+          limits:
+            cpu: 5000m
+            memory: 1Gi
+        volumeMounts:
+        - name: ssh-keys
+          # Mount the authorized_keys ConfigMap into the Pod
+          mountPath: "/home/jump/.ssh/authorized_keys"
+          subPath: authorized_keys
+      volumes:
+      - name: ssh-keys
+        configMap:
+          name: authorized-ssh-keys
+          defaultMode: 0600
+          items:
+          - key: authorized_keys
+            path: authorized_keys
+      securityContext:
+          fsGroup: 500

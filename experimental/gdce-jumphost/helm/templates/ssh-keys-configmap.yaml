@@ -1,0 +1,15 @@
+# Copyright 2024 Google. This software is provided as-is, without warranty or
+# representation for any use or purpose. Your use of it is subject to your agreement
+# with Google.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: authorized-ssh-keys
+  namespace: {{ .Values.namespace }}
+data:
+  # The content of authorized_keys should be a valid authorized_keys file format.
+  # See https://linux.die.net/man/8/sshd for detail.
+  authorized_keys: |
+    # thisisben@
+    ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC3pRUQid0asz2/BzgzBpxSQuM5hc16StTrLZPSlwMrSVZ2gbfxdJqEv5tEB/e6tkc9dpqdFK6UHK0SQMihqhdhlMxMqkTccJ2OdpxgV7x8KtsrKN2GnFzaqalXjdFfxPBETJmXXfYkCFo/pXcL2hQCpIErki+3elX6FnN1TgNYFuJJ39VyZ0gBc2dl7F9ifb2nPj5fRCU0vLt+HVSm6euHgjHGIPhObdUwrUKRFBGYaB918iwSw890oIppRAKfXMFA50I1aUH126m6Ipvi0qQLHHHhWA10KBKREpOnWuH0CTk2gPYBqcEdjzc+/HjzutW1rkh/piPSekEG87GanaqaD1KHfLHOmsX7TAyYIPHCJMwVEGcj3Lb/sXYA2e1oy81VDsByyOW72UFQ/KL7m+MBzryziLVCxjzh2QT7OZCWGWBIU8/3SJTLABdBg+43hExQ9eLaIJyuPGk7OAkuC0Ofcp2mSFsxlKTyyXjHXrIV0VoijdnJOVRb376h9XFNL5k= benchapman@benchapman1

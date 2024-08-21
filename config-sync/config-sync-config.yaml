@@ -10,5 +10,5 @@ spec:
     secretType: token
     # gcpServiceAccountEmail: EMAIL
     # metricsGcpServiceAccountEmail: METRICS_EMAIL
-    policyDir: root-sync
+    policyDir: config-sync/root-sync
     preventDrift: true

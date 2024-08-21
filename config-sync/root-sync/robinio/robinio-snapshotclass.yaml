@@ -1,0 +1,13 @@
+# Copyright 2024 Google. This software is provided as-is, without warranty or representation
+# or any use or purpose. Your use of it is subject to your agreement with Google.
+
+apiVersion: snapshot.storage.k8s.io/v1beta1
+kind: VolumeSnapshotClass
+metadata:
+  name: robin-snapshotclass
+  labels:
+    app.kubernetes.io/instance: robin
+    app.kubernetes.io/managed-by: robin.io
+    app.kubernetes.io/name: robin
+driver: robin
+deletionPolicy: Delete

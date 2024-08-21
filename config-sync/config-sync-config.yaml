@@ -1,0 +1,14 @@
+applySpecVersion: 1
+spec:
+  upgrades: manual
+  configSync:
+    enabled: true
+    sourceType: git
+    sourceFormat: unstructured
+    syncRepo: https://github.com/Ben-Chapman/Living-on-the-Edge.git
+    syncRev: main
+    secretType: token
+    # gcpServiceAccountEmail: EMAIL
+    # metricsGcpServiceAccountEmail: METRICS_EMAIL
+    policyDir: root-sync
+    preventDrift: true

@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: stress
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: stress-cpu
+  name: stress-cpu
+  namespace: stress
+spec:
+  replicas: 200
+  selector:
+    matchLabels:
+      app: stress-cpu
+  template:
+    metadata:
+      labels:
+        app: stress-cpu
+    spec:
+      containers:
+      - name: stress-ng-cpu
+        image: colinianking/stress-ng
+        args:
+        - "--cpu=2"
+        - "--timeout=1800s"
+
+        imagePullPolicy: IfNotPresent
+        resources: {}
+      nodeSelector:
+        experimental: "true"

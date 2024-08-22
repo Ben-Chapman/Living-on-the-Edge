@@ -22,7 +22,7 @@ spec:
    spec:
      containers:
      - name: robincli
-       image: gcr.io/anthos-edgecontainer-release/robin-storage/robinimg:5.3.16-682
+       image: gcr.io/anthos-edgecontainer-release/robin-storage/robinsys/robinimg:5.4.8-313
        workingDir: /root
        command: ["/bin/bash","-c","mkdir -p /root/.robin; ln -s -t /usr/lib/python3.7/site-packages/ /opt/robin/current/python3/site-packages/robincli /opt/robin/current/python3/site-packages/stormgr_def.py /opt/robin/current/python3/site-packages/stormgr_lib.py; /opt/robin/current/bin/robin client add-context robin-master.robinio --set-current; while true; do sleep 10000; done"]
        resources:

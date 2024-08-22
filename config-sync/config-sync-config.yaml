@@ -11,4 +11,4 @@ spec:
     # gcpServiceAccountEmail: EMAIL
     # metricsGcpServiceAccountEmail: METRICS_EMAIL
     policyDir: config-sync/root-sync
-    preventDrift: true
+    preventDrift: false  # https://b.corp.google.com/issues/345455587#comment11

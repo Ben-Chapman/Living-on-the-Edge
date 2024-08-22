@@ -38,6 +38,7 @@ provisioner: robin
 reclaimPolicy: Delete
 volumeBindingMode: Immediate
 allowVolumeExpansion: true
+
 ---
 apiVersion: cdi.kubevirt.io/v1beta1
 kind: StorageProfile

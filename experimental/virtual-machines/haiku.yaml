@@ -1,0 +1,57 @@
+apiVersion: vm.cluster.gke.io/v1
+kind: VirtualMachine
+metadata:
+  name: haiku
+  namespace: vms
+spec:
+  osType: Linux
+  compute:
+    cpu:
+      vcpus: 2
+    memory:
+      capacity: 8Gi
+  disks:
+  - boot: true
+    driver: virtio
+    virtualMachineDiskName: haiku
+  interfaces:
+  - default: true
+    name: eth0
+    networkName: pod-network
+  template:
+    spec:
+      domain:
+        machine:
+          # Haiku needs the i440fx chipset
+          type: pc-i440fx-2.10
+---
+
+apiVersion: vm.cluster.gke.io/v1
+kind: VirtualMachineDisk
+metadata:
+  name: haiku
+  namespace: vms
+spec:
+  size: 10Gi
+  storageClassName: robin-vm-repl-2-block-immediate
+  source:
+    gcs:
+      url: gs://living-on-the-edge-vm-images/HaikuR1-shrunk.qcow2
+      secretRef: vm-image-importer
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ssh-to-vm
+  namespace: vms
+spec:
+  type: LoadBalancer
+  ports:
+  - name: ssh
+    port: 22
+    protocol: TCP
+    targetPort: 22
+  selector:
+    app: haiku

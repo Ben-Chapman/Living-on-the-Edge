@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.guacamoleName }}
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.guacamoleName }}
+  replicas: {{ .Values.guacamoleReplicas }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.guacamoleName }}
+    spec:
+      containers:
+      - name: {{ .Values.guacamoleName }}
+        image: {{ .Values.guacamoleImage }}
+        resources: {}
+        ports:
+        - containerPort: {{ .Values.guacamoleSourcePort }}
+        env:
+        {{- range $key, $val := .Values.guacamoleEnv }}
+        - name: {{ $key | upper }}
+          value: {{ $val | quote }}
+        {{- end }}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.guacamoleName }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.guacamoleName }}
+spec:
+  ports:
+  - port: {{ .Values.guacamoleVipPort }}
+    targetPort: {{ .Values.guacamoleSourcePort }}
+    protocol: TCP
+  selector:
+    app: {{ .Values.guacamoleName }}

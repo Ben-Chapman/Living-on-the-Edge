@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.dbName }}
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.dbName }}
+  replicas: {{ .Values.dbReplicas }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.dbName }}
+    spec:
+      containers:
+      - name: {{ .Values.dbName }}
+        image: {{ .Values.dbImage }}
+        resources: {}
+        ports:
+        - containerPort: {{ .Values.dbSourcePort }}
+        volumeMounts:
+        - mountPath: "/var/lib/mysql"
+          name: db-data-volume
+        env:
+        {{- range $key, $val := .Values.dbEnv }}
+        - name: {{ $key | upper }}
+          value: {{ $val | quote }}
+        {{- end }}
+      volumes:
+      - name: db-data-volume
+        persistentVolumeClaim:
+          claimName: db-data-claim
+
+      initContainers:
+      - name: init-create-database-if-not-exist
+        image: {{ .Values.dbImage }}
+        command: |-
+        #!/bin/bash
+
+      # - name: init-mydb
+      #   image: busybox:1.28
+      #   command: ['sh', '-c', "until nslookup mydb.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for mydb; sleep 2; done"]
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.dbName }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.dbName }}
+spec:
+  ports:
+  - port: {{ .Values.dbVipPort }}
+    targetPort: {{ .Values.dbSourcePort }}
+    protocol: TCP
+  selector:
+    app: {{ .Values.dbName }}

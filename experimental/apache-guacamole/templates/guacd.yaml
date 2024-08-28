@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.guacdName }}
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.guacdName }}
+  replicas: {{ .Values.guacdReplicas }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.guacdName }}
+    spec:
+      containers:
+      - name: {{ .Values.guacdName }}
+        image: {{ .Values.guacdImage }}
+        resources: {}
+        ports:
+        - containerPort: {{ .Values.guacdPort }}
+        env:
+        {{- range $key, $val := .Values.guacdEnv }}
+        - name: {{ $key | upper }}
+          value: {{ $val | quote }}
+        {{- end }}
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.guacdName }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.guacdName }}
+spec:
+  ports:
+  - port: {{ .Values.guacdPort }}
+    targetPort: {{ .Values.guacdPort }}
+    protocol: TCP
+  selector:
+    app: {{ .Values.guacdName }}

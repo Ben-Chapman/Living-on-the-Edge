@@ -24,6 +24,8 @@ spec:
         - name: {{ $key | upper }}
           value: {{ $val | quote }}
         {{- end }}
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecrets}}
 
 ---
 

@@ -32,17 +32,6 @@ spec:
         persistentVolumeClaim:
           claimName: db-data-claim
 
-      initContainers:
-      - name: init-create-database-if-not-exist
-        image: {{ .Values.dbImage }}
-        command: |-
-        #!/bin/bash
-
-      # - name: init-mydb
-      #   image: busybox:1.28
-      #   command: ['sh', '-c', "until nslookup mydb.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for mydb; sleep 2; done"]
-
-
 ---
 
 apiVersion: v1

@@ -13,7 +13,7 @@ guacdEnv:
 # MariaDB Configurations
 dbName: &dbname db
 dbReplicas: 1
-dbVipPort: 80
+dbVipPort: 3306
 dbSourcePort: &dbport 3306
 dbImage: mariadb:lts
 dbEnv:
@@ -36,7 +36,7 @@ guacamoleEnv:
   MYSQL_DATABASE: *databaseName
   MYSQL_USER: guacamole_user
   MYSQL_PASSWORD: guacamole
-  # MYSQL_AUTO_CREATE_ACCOUNTS: true
+  MYSQL_AUTO_CREATE_ACCOUNTS: true
 
 
 

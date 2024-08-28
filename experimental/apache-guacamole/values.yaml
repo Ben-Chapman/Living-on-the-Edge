@@ -1,14 +1,44 @@
-# Default values for apache-guacamole.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+namespace: guacamole
 
-replicaCount: 1
+# guacd Configurations
+guacdName: &guacdname guacd
+guacdReplicas: 1
+guacdPort: &guacdport 4822
+guacdImage: guacamole/guacd
+pullPolicy: Always
+guacdEnv:
+  GUACD_LOG_LEVEL: "info"
 
-image:
-  repository: nginx
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+
+# MariaDB Configurations
+dbName: &dbname db
+dbReplicas: 1
+dbVipPort: 80
+dbSourcePort: &dbport 3306
+dbImage: mariadb:lts
+dbEnv:
+  MARIADB_RANDOM_ROOT_PASSWORD: 1
+  MARIADB_DATABASE: &databaseName guacamole_db
+
+
+
+# guacamole Configurations
+guacamoleName: guacamole
+guacamoleReplicas: 1
+guacamoleVipPort: 80
+guacamoleSourcePort: 8080
+guacamoleImage: guacamole/guacamole
+guacamoleEnv:
+  GUACD_HOSTNAME: *guacdname
+  GUACD_PORT: *guacdport
+  MYSQL_HOSTNAME: *dbname
+  MYSQL_PORT: *dbport
+  MYSQL_DATABASE: *databaseName
+  MYSQL_USER: guacamole_user
+  MYSQL_PASSWORD: guacamole
+  # MYSQL_AUTO_CREATE_ACCOUNTS: true
+
+
 
 imagePullSecrets: []
 nameOverride: ""

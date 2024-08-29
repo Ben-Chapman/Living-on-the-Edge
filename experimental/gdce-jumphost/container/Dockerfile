@@ -25,6 +25,7 @@ RUN apk add --no-cache \
   git \
   iputils \
   mtr \
+  openssh \
   openssh-server \
   tmux \
   tzdata \

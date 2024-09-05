@@ -7,9 +7,9 @@ spec:
   osType: Linux
   compute:
     cpu:
-      vcpus: 2
+      vcpus: 8
     memory:
-      capacity: 8Gi
+      capacity: 16Gi
   disks:
   - boot: true
     driver: virtio
@@ -27,22 +27,21 @@ metadata:
   name: kdeneon
   namespace: vms
 spec:
-  size: 15Gi
+  size: 20Gi
   storageClassName: robin-vm-repl-2-block-immediate
   source:
     gcs:
-      url: gs://living-on-the-edge-vm-images/KDENeon-shrunk.qcow2
+      url: gs://living-on-the-edge-vm-images/KDENeon.qcow2
       secretRef: vm-image-importer
 
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
   name: remote-access-to-kdeneon
   namespace: vms
 spec:
-  type: LoadBalancer
+  # type: LoadBalancer
   ports:
   - name: rdp-tcp
     port: 3389
@@ -56,46 +55,9 @@ spec:
     port: 22
     protocol: TCP
     targetPort: 22
+  - name: vnc
+    port: 5900
+    protocol: TCP
+    targetPort: 5900
   selector:
-    app: kdeneon
-
-# ---
-# apiVersion: vm.cluster.gke.io/v1
-# kind: VirtualMachine
-# metadata:
-#   name: ben-test-server
-#   namespace: default
-# spec:
-#   osType: Linux
-#   compute:
-#     cpu:
-#       vcpus: 4
-#     memory:
-#       capacity: 8Gi
-#   interfaces:
-#     - name: eth0
-#       networkName: pod-network
-#       default: false
-#     - name: eth1
-#       networkName: store-vlan-2100
-#       ipAddresses:
-#         - 10.159.172.102/24
-#       default: true
-#   disks:
-#     - boot: true
-#       virtualMachineDiskName: ben-test-server-disk
-
-# ---
-
-# apiVersion: vm.cluster.gke.io/v1
-# kind: VirtualMachineDisk
-# metadata:
-#   name: ben-test-server-disk
-#   namespace: default
-# spec:
-#   size: 10Gi
-#   storageClassName: robin-vm-repl-2-block-immediate
-#   source:
-#     gcs:
-#       url: gs://appsrv-image/ben-test-server.qcow2
-#       secretRef: vm-image-importer
+    kubevirt/vm: kdeneon

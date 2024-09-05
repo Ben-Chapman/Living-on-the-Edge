@@ -9,9 +9,9 @@ RUN apk add curl && \
 
 
 FROM guacamole/guacamole as runtime
-ARG EXTENSIONS_DIR=/home/guacamole/.guacamole/extensions
+ARG CUSTOM_EXTENSIONS_DIR=/tmp/custom-extensions/extensions
+# ARG CUSTOM_EXTENSIONS_DIR=/tmp/
 
-RUN mkdir -p ${EXTENSIONS_DIR}
-# RUN mkdir /home/guacamole/.guacamole/extensions
+RUN mkdir -p ${CUSTOM_EXTENSIONS_DIR} && chown 1001:1001 ${CUSTOM_EXTENSIONS_DIR}
 
-COPY --from=builder packages/* ${EXTENSIONS_DIR}
+COPY --chown=1001:1001 --from=builder packages/* ${CUSTOM_EXTENSIONS_DIR}/

@@ -65,6 +65,7 @@ RUN ssh-keygen -A \
   "s/#PermitRootLogin prohibit-password/PermitRootLogin no/g; \
    s/#StrictModes yes/StrictModes no/g; \
    s/#PasswordAuthentication yes/PasswordAuthentication no/g; \
+   s/AllowTcpForwarding no/AllowTcpForwarding yes/g; \
    \$aAllowUsers $JUMPHOST_USERNAME" \
   /etc/ssh/sshd_config
 

@@ -1,0 +1,64 @@
+apiVersion: vm.cluster.gke.io/v1
+kind: VirtualMachine
+metadata:
+  name: windows10
+  namespace: vms
+spec:
+  osType: Windows
+  compute:
+    cpu:
+      vcpus: 4
+    memory:
+      capacity: 8Gi
+  disks:
+  - boot: true
+    driver: virtio
+    virtualMachineDiskName: windows10-boot
+  interfaces:
+  - default: true
+    name: eth0
+    networkName: pod-network
+
+# ---
+# apiVersion: kubevirt.io/v1
+# kind: VirtualMachineInstance
+# metadata:
+#   name: windows10
+#   namespace: vms
+# spec:
+#   domain:
+#     devices:
+#       tpm:
+#         persistent: true
+#     features:
+#       acpi:
+#         enabled: true
+#   evictionStrategy: LiveMigrate
+
+
+
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: remote-access-to-windows10
+  namespace: vms
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 3389
+    protocol: TCP
+    targetPort: 3389
+  - name: rdp-udp
+    port: 3389
+    protocol: UDP
+  #   targetPort: 3389
+  # - name: ssh
+  #   port: 22
+  #   protocol: TCP
+  #   targetPort: 22
+  selector:
+    kubevirt/vm: windows10

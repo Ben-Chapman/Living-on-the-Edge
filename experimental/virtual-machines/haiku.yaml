@@ -4,28 +4,25 @@ metadata:
   name: haiku
   namespace: vms
 spec:
-  osType: Linux
+  autoRestartOnConfigurationChange: true
+  osType: Windows
   compute:
     cpu:
-      vcpus: 2
+      vcpus: 4
     memory:
       capacity: 8Gi
   disks:
   - boot: true
-    driver: virtio
+    driver: sata
     virtualMachineDiskName: haiku
+    autoDelete: false
+  # - virtualMachineDiskName: haiku-iso
   interfaces:
   - default: true
     name: eth0
+    model: e1000
     networkName: pod-network
-  template:
-    spec:
-      domain:
-        machine:
-          # Haiku needs the i440fx chipset
-          type: pc-i440fx-2.10
 ---
-
 apiVersion: vm.cluster.gke.io/v1
 kind: VirtualMachineDisk
 metadata:
@@ -34,24 +31,34 @@ metadata:
 spec:
   size: 10Gi
   storageClassName: robin-vm-repl-2-block-immediate
-  source:
-    gcs:
-      url: gs://living-on-the-edge-vm-images/HaikuR1-shrunk.qcow2
-      secretRef: vm-image-importer
 
----
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: ssh-to-vm
+#   namespace: vms
+# spec:
+#   type: LoadBalancer
+#   ports:
+#   - name: ssh
+#     port: 22
+#     protocol: TCP
+#     targetPort: 22
+#   selector:
+#     app: haiku
 
-apiVersion: v1
-kind: Service
-metadata:
-  name: ssh-to-vm
-  namespace: vms
-spec:
-  type: LoadBalancer
-  ports:
-  - name: ssh
-    port: 22
-    protocol: TCP
-    targetPort: 22
-  selector:
-    app: haiku
+# ---
+# apiVersion: vm.cluster.gke.io/v1
+# kind: VirtualMachineDisk
+# metadata:
+#   name: haiku-iso
+#   namespace: vms
+# spec:
+#   source:
+#     gcs:
+#       url: gs://living-on-the-edge-vm-images/haiku-r1beta4-x86_64-anyboot.iso
+#       secretRef: vm-image-importer
+#   size: 5Gi
+#   storageClassName: robin-vm-repl-2-block-immediate
+#   diskType: cdrom

@@ -1,4 +1,3 @@
-/ # cat /etc/ssh/sshd_config
 #	$OpenBSD: sshd_config,v 1.104 2021/07/02 05:11:21 dtucker Exp $
 
 # This is the sshd server system-wide configuration file.  See
@@ -34,8 +33,16 @@ Include /etc/ssh/sshd_config.d/*.conf
 # Authentication:
 
 #LoginGraceTime 2m
-#PermitRootLogin prohibit-password
-#StrictModes yes
+PermitRootLogin no
+
+# We're mounting a K8s ConfigMap as a volume in the Pod, and there are limited controls
+# within K8s to mount this ConfigMap with the sshd desired dir/file permissions.
+#
+# sshd StrictMode was designed to protect permission misconfiguration for user config
+# files in shared workstations.
+# As the container image is static and hermetic this protection isn't as useful,
+# so disabling it. For more detail, man sshd
+StrictModes no
 #MaxAuthTries 6
 #MaxSessions 10
 
@@ -59,7 +66,7 @@ AuthorizedKeysFile	.ssh/authorized_keys
 #IgnoreRhosts yes
 
 # To disable tunneled clear text passwords, change to no here!
-#PasswordAuthentication yes
+PasswordAuthentication no
 #PermitEmptyPasswords no
 
 # Change to no to disable s/key passwords
@@ -80,7 +87,7 @@ AuthorizedKeysFile	.ssh/authorized_keys
 # be allowed through the KbdInteractiveAuthentication and
 # PasswordAuthentication.  Depending on your PAM configuration,
 # PAM authentication via KbdInteractiveAuthentication may bypass
-# the setting of "PermitRootLogin prohibit-password".
+# the setting of "PermitRootLogin without-password".
 # If you just want the PAM account and session checks to run without
 # PAM authentication, then enable this but set PasswordAuthentication
 # and KbdInteractiveAuthentication to 'no'.
@@ -88,9 +95,9 @@ AuthorizedKeysFile	.ssh/authorized_keys
 
 #AllowAgentForwarding yes
 # Feel free to re-enable these if your use case requires them.
-AllowTcpForwarding no
+AllowTcpForwarding yes
 GatewayPorts no
-X11Forwarding no
+X11Forwarding yes
 #X11DisplayOffset 10
 #X11UseLocalhost yes
 #PermitTTY yes
@@ -112,7 +119,7 @@ X11Forwarding no
 #Banner none
 
 # override default of no subsystems
-Subsystem	sftp	internal-sftp
+Subsystem	sftp	/usr/lib/ssh/sftp-server
 
 # Example of overriding settings on a per-user basis
 #Match User anoncvs
@@ -120,3 +127,4 @@ Subsystem	sftp	internal-sftp
 #	AllowTcpForwarding no
 #	PermitTTY no
 #	ForceCommand cvs server
+AllowUsers jump

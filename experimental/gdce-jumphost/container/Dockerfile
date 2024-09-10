@@ -13,12 +13,12 @@ ARG JUMPHOST_HOMEDIR=/home/$JUMPHOST_USERNAME
 # kubectl: curl -Ls https://dl.k8s.io/release/stable.txt
 # virtctl: curl https://storage.googleapis.com/kubevirt-prow/release/kubevirt/kubevirt/stable.txt
 ARG KUBECTL_VERSION=1.31.0
-ARG VIRTCTL_VERSION=1.3.0
+ARG VIRTCTL_VERSION=1.3.1
 
 # Install some useful packages including:
 # ISC DNS tools (bind-tools)
 # mtr network diagnostic tool (mtr)
-# ZSH (Alpine ships with sh, installing a more full-featured shell) (zsh)
+# ZSH (Alpine ships with sh, installing a more full-featured shell - zsh)
 RUN apk add --no-cache \
   bind-tools \
   curl \
@@ -32,7 +32,7 @@ RUN apk add --no-cache \
   vim \
   zsh
 
-  # Install a pinned version of kubectl and KubeVirt virtctl
+# Install a pinned version of kubectl and KubeVirt virtctl
 RUN curl -LO https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl \
   && curl -L -o kubectl-virt https://github.com/kubevirt/kubevirt/releases/download/v${VIRTCTL_VERSION}/virtctl-v${VIRTCTL_VERSION}-linux-amd64 \
   && install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl \
@@ -50,24 +50,8 @@ RUN adduser \
   && P=$(head -c 32 /dev/urandom | base64); echo -e "${P}\n${P}" | passwd $JUMPHOST_USERNAME
 
 
-# Generate ssh host keys, prevent root login through SSH, do not check file modes
-# and ownership of sshd-related files before accepting login, and only allow login for
-# the $JUMPHOST_USERNAME user.
-#
-# We're mounting a K8s ConfigMap as a volume in the Pod, and there are limited controls
-# within K8s to mount this ConfigMap with the sshd desired dir/file permissions.
-# sshd StrictMode was designed to protect permission misconfiguration for user config
-# files shared workstations.
-# As this is a static and hermetic image this protection isn't as useful, so disabling it.
-# For more detail, man sshd
-RUN ssh-keygen -A \
-  && sed -i -e \
-  "s/#PermitRootLogin prohibit-password/PermitRootLogin no/g; \
-   s/#StrictModes yes/StrictModes no/g; \
-   s/#PasswordAuthentication yes/PasswordAuthentication no/g; \
-   s/AllowTcpForwarding no/AllowTcpForwarding yes/g; \
-   \$aAllowUsers $JUMPHOST_USERNAME" \
-  /etc/ssh/sshd_config
+# Generate ssh host keys
+RUN ssh-keygen -A
 
 # Symlink vi to vim, create a .ssh directory and recursively chown the home directory
 RUN ln -fs /usr/bin/vim /usr/bin/vi \
@@ -75,7 +59,8 @@ RUN ln -fs /usr/bin/vim /usr/bin/vi \
   && ln -s -f $JUMPHOST_HOMEDIR/.zshrc $JUMPHOST_HOMEDIR/.zshenv \
   && chown -R $JUMPHOST_USERNAME:$JUMPHOST_USERNAME $JUMPHOST_HOMEDIR
 
-# Copy in our sshd customizations for the $JUMPHOST_USERNAME user
+# Copy in our sshd configurations
+COPY container_files/sshd_config /etc/ssh/sshd_config
 COPY container_files/jumphost_sshd_config /etc/ssh/sshd_config.d/jump.conf
 
 # Enable a customized ZSH profile
@@ -86,6 +71,9 @@ COPY --chown=$JUMPHOST_USERNAME:$JUMPHOST_USERNAME container_files/vimrc $JUMPHO
 
 # Message of the day, presented when logging into this container
 COPY container_files/motd /etc/motd
+
+# Initial kubeconfig file
+COPY --chown=$JUMPHOST_USERNAME:$JUMPHOST_USERNAME container_files/kube_config $JUMPHOST_HOMEDIR/.kube/config
 
 # sshd has been configured to listen on TCP/22 (the default config)
 EXPOSE 22/tcp

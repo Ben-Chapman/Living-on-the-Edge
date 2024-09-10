@@ -1,0 +1,80 @@
+apiVersion: vm.cluster.gke.io/v1
+kind: VirtualMachine
+metadata:
+  name: windowsxp
+  namespace: vms
+spec:
+  autoRestartOnConfigurationChange: true
+  osType: Windows
+  compute:
+    machineChipSet: q35
+    cpu:
+      vcpus: 1
+    memory:
+      capacity: 2Gi
+  disks:
+  # - boot: true
+    # driver: sata
+  - virtualMachineDiskName: windowsxp
+    autoDelete: false
+  - virtualMachineDiskName: windowsxp-iso
+    boot: true
+  interfaces:
+  - default: true
+    name: eth0
+    # model: e1000
+    networkName: pod-network
+---
+apiVersion: vm.cluster.gke.io/v1
+kind: VirtualMachineDisk
+metadata:
+  name: windowsxp
+  namespace: vms
+spec:
+  size: 10Gi
+  storageClassName: robin-vm-repl-2-block-immediate
+
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: ssh-to-vm
+#   namespace: vms
+# spec:
+#   type: LoadBalancer
+#   ports:
+#   - name: ssh
+#     port: 22
+#     protocol: TCP
+#     targetPort: 22
+#   selector:
+#     app: windowsxp
+
+---
+# apiVersion: vm.cluster.gke.io/v1
+# kind: VirtualMachineDisk
+# metadata:
+#   name: virtio-driver
+#   namespace: vms
+# spec:
+#   size: 1Gi
+#   source:
+#     registry:
+#       url: docker://quay.io/kubevirt/virtio-container-disk:latest
+#   storageClassName: robin-vm-repl-2-block-immediate
+#   diskType: cdrom
+
+# ---
+# apiVersion: vm.cluster.gke.io/v1
+# kind: VirtualMachineDisk
+# metadata:
+#   name: windowsxp-iso
+#   namespace: vms
+# spec:
+#   source:
+#     gcs:
+#       url: gs://living-on-the-edge-vm-images/isos/en_windows_xp_professional_with_service_pack_3_x86_cd_vl_x14-73974.iso
+#       secretRef: vm-image-importer
+#   size: 1Gi
+#   storageClassName: robin-vm-repl-2-block-immediate
+#   diskType: cdrom

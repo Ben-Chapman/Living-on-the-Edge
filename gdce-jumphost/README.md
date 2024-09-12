@@ -12,11 +12,14 @@ Google Distributed Cloud Edge (GDCE) is a Google-managed on-premise Kubernetes
 cluster which is designed to run at the edge of a retail customer's network,
 primarily in their stores.
 
-Day-to-day connectivity with the kube-apiserver is facilitated through the
+Day-to-day connectivity with the GDCE is facilitated through the
 [GCP Connect Gateway](https://cloud.google.com/kubernetes-engine/enterprise/multicluster-management/gateway).
-Connect Gateway provides a simple, consistent and secured way to access your
+
+> Connect Gateway provides a simple, consistent and secured way to access your
 Google-registered Kubernetes clusters regardless of the cluster's physical
-location. The vast majority of your interaction with the GDCE clusters will be
+location.
+
+The vast majority of your interaction with the GDCE clusters will be
 through Connect Gateway, but there are a few Kubernetes-related operations that
 Connect Gateway does not support today:
 
@@ -72,6 +75,10 @@ authentication is provided or supported.
 
 A Kubernetes ConfigMap containing each user's SSH public key is mounted into the
 Pod, and is used to authenticate a user's SSH session.
+
+SSH access is facilitated through a standard Kubernetes service when using the
+default GDCE network, or through a statically-defined or DHCP-provided IP address
+when using a GDCE multinetwork network.
 
 ### Initial Setup
 1. Generate an SSH keypair (if needed)
@@ -152,14 +159,14 @@ cluster. This will provide you the ability to view and explore all resources
 across the cluster, but not to edit or modify resources on the cluster. If you
 need to edit or modify resources, continue to use Connect Gateway.
 
-Permissions for the jumphost is facilitated through a Kubernetes `ClusterRole`
+Permissions for the jumphost are facilitated through a Kubernetes `ClusterRole`
 defined in [cluster-role.yaml](helm/templates/cluster-role.yaml). You can adjust the
 permissions as needed through this `ClusterRole`.
 
 ### Troubleshooting
 - The GDCE jumphost does not require and will not accept a password for the
 `jump` user; it's all public-key authentication. If you receive a
-`jump@10.223.172.245: Permission denied (publickey,keyboard-interactive).` error
+`jump@10.223.172.245: Permission denied (publickey,keyboard-interactive)` error
 message, confirm that:
   - Your public key was successfully applied to the server:
   `kubectl get configmap authorized-ssh-keys -n gdce-jumphost -o yaml`

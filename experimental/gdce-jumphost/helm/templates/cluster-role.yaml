@@ -34,6 +34,7 @@ rules:
       - virtualmachineinstances/ssh
       - virtualmachineinstances/vnc
       - virtualmachineinstances/portforward
+      - virtualmachines/portforward
       - virtualmachines/start
       - virtualmachines/stop
       - virtualmachines/soft-reboot

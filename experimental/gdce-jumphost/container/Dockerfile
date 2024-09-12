@@ -10,8 +10,8 @@ ARG JUMPHOST_USERNAME=jump
 ARG JUMPHOST_HOMEDIR=/home/$JUMPHOST_USERNAME
 
 # For the latest stable version:
-# kubectl: curl -Ls https://dl.k8s.io/release/stable.txt
-# virtctl: curl https://storage.googleapis.com/kubevirt-prow/release/kubevirt/kubevirt/stable.txt
+# kubectl: https://dl.k8s.io/release/stable.txt
+# virtctl: https://storage.googleapis.com/kubevirt-prow/release/kubevirt/kubevirt/stable.txt
 ARG KUBECTL_VERSION=1.31.0
 ARG VIRTCTL_VERSION=1.3.1
 

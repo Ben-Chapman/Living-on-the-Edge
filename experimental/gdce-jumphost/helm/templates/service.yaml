@@ -7,14 +7,18 @@ kind: Service
 metadata:
   name: {{ .Values.name }}
   namespace: {{ .Values.namespace }}
+
+  {{- if .Values.service.loadBalancerIP }}
   annotations:
-    metallb.universe.tf/loadBalancerIPs: 10.223.172.245
+    metallb.universe.tf/loadBalancerIPs: {{ .Values.service.loadBalancerIP }}
+  {{- end }}
+
 spec:
-  type: LoadBalancer
+  type: {{ .Values.service.type }}
   ports:
-  - name: ssh
-    port: 22
-    protocol: TCP
-    targetPort: 22
+  - name: {{ .Values.service.name }}
+    port: {{ .Values.service.port }}
+    protocol: {{ .Values.service.protocol }}
+    targetPort: {{ .Values.service.targetPort }}
   selector:
     app: {{ .Values.name }}

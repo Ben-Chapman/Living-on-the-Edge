@@ -57,7 +57,7 @@ spec:
 # spec:
 #   source:
 #     gcs:
-#       url: gs://living-on-the-edge-vm-images/haiku-r1beta4-x86_64-anyboot.iso
+#       url: gs://living-on-the-edge-vm-images/isos/haiku-r1beta4-x86_64-anyboot.iso
 #       secretRef: vm-image-importer
 #   size: 5Gi
 #   storageClassName: robin-vm-repl-2-block-immediate

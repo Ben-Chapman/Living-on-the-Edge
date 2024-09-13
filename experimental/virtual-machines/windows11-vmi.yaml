@@ -1,3 +1,5 @@
+# https://kevinlocke.name/bits/2021/12/10/windows-11-guest-virtio-libvirt/
+# https://pve.proxmox.com/wiki/Windows_VirtIO_Drivers
 apiVersion: kubevirt.io/v1
 kind: VirtualMachineInstance
 metadata:
@@ -14,6 +16,8 @@ spec:
       model: host-model
       sockets: 1
       threads: 1
+    machine:
+      type: q35
     devices:
       tpm: {}
       disks:

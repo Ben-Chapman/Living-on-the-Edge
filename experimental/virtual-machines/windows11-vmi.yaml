@@ -1,0 +1,104 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachineInstance
+metadata:
+  name: windows11
+  namespace: vms
+spec:
+  domain:
+    firmware:
+      bootloader:
+        efi:
+          secureBoot: true
+    cpu:
+      cores: 4
+      model: host-model
+      sockets: 1
+      threads: 1
+    devices:
+      tpm: {}
+      disks:
+      - name: disk0
+        bootOrder: 1
+        disk:
+          bus: virtio
+        serial: windows11-boot
+      - name: disk1
+        bootOrder: 2
+        cdrom:
+          bus: sata
+          readonly: true
+          tray: closed
+        serial: windows11-iso
+      - name: disk2
+        bootOrder: 3
+        cdrom:
+          bus: sata
+          readonly: true
+          tray: closed
+        serial: virtio-driver
+      interfaces:
+      - macAddress: f8:8f:ca:00:00:01
+        masquerade: {}
+        name: eth0
+    features:
+      acpi:
+        enabled: true
+      smm:
+        enabled: true
+    resources:
+      requests:
+        memory: 8G
+  evictionStrategy: LiveMigrate
+  networks:
+  - name: eth0
+    pod: {}
+  volumes:
+  - dataVolume:
+      name: windows11-boot
+    name: disk0
+  - dataVolume:
+      name: windows11-iso
+    name: disk1
+  - dataVolume:
+      name: virtio-driver
+    name: disk2
+
+
+# ---
+# apiVersion: vm.cluster.gke.io/v1
+# kind: VirtualMachineDisk
+# metadata:
+#   name: windows11-boot
+#   namespace: vms
+# spec:
+#   size: 30Gi
+#   storageClassName: robin-vm-repl-2-block-immediate
+
+# ---
+# apiVersion: vm.cluster.gke.io/v1
+# kind: VirtualMachineDisk
+# metadata:
+#   name: virtio-driver
+#   namespace: vms
+# spec:
+#   size: 1Gi
+#   source:
+#     registry:
+#       url: docker://quay.io/kubevirt/virtio-container-disk:latest
+#   storageClassName: robin-vm-repl-2-block-immediate
+#   diskType: cdrom
+
+# ---
+# apiVersion: vm.cluster.gke.io/v1
+# kind: VirtualMachineDisk
+# metadata:
+#   name: windows11-iso
+#   namespace: vms
+# spec:
+#   source:
+#     gcs:
+#       url: gs://living-on-the-edge-vm-images/isos/Win11_23H2_English_x64v2.iso
+#       secretRef: vm-image-importer
+#   size: 10Gi
+#   storageClassName: robin-vm-repl-2-block-immediate
+#   diskType: cdrom

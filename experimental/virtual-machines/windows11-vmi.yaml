@@ -1,5 +1,7 @@
 # https://kevinlocke.name/bits/2021/12/10/windows-11-guest-virtio-libvirt/
 # https://pve.proxmox.com/wiki/Windows_VirtIO_Drivers
+# https://www.tomshardware.com/how-to/install-windows-11-without-microsoft-account
+
 apiVersion: kubevirt.io/v1
 kind: VirtualMachineInstance
 metadata:
@@ -64,9 +66,28 @@ spec:
       name: windows11-iso
     name: disk1
   - dataVolume:
-      name: virtio-driver
+      name: fedora-virtio-driver
     name: disk2
 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: remote-access-to-windows11
+  namespace: vms
+spec:
+  type: ClusterIP
+  ports:
+  - name: rdp-tcp
+    port: 3389
+    protocol: TCP
+    targetPort: 3389
+  - name: rdp-udp
+    port: 3389
+    protocol: UDP
+    targetPort: 3389
+  selector:
+    vm.kubevirt.io/name: windows11
 
 # ---
 # apiVersion: vm.cluster.gke.io/v1
@@ -75,20 +96,22 @@ spec:
 #   name: windows11-boot
 #   namespace: vms
 # spec:
-#   size: 30Gi
+#   size: 32Gi
 #   storageClassName: robin-vm-repl-2-block-immediate
+
 
 # ---
 # apiVersion: vm.cluster.gke.io/v1
 # kind: VirtualMachineDisk
 # metadata:
-#   name: virtio-driver
+#   name: fedora-virtio-driver
 #   namespace: vms
 # spec:
 #   size: 1Gi
 #   source:
-#     registry:
-#       url: docker://quay.io/kubevirt/virtio-container-disk:latest
+#     gcs:
+#       url: gs://living-on-the-edge-vm-images/isos/virtio-win-0.1.262.iso
+#       secretRef: vm-image-importer
 #   storageClassName: robin-vm-repl-2-block-immediate
 #   diskType: cdrom
 

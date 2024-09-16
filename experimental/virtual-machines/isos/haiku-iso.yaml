@@ -1,0 +1,13 @@
+apiVersion: vm.cluster.gke.io/v1
+kind: VirtualMachineDisk
+metadata:
+  name: haiku-iso
+  namespace: vms
+spec:
+  source:
+    gcs:
+      url: gs://living-on-the-edge-vm-images/isos/haiku-r1beta5-x86_64-anyboot.iso
+      secretRef: vm-image-importer
+  size: 5Gi
+  storageClassName: robin-vm-repl-2-block-immediate
+  diskType: cdrom

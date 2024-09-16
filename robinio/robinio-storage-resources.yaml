@@ -54,6 +54,31 @@ spec:
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
+  name: robin-vm-repl-1-block-immediate
+parameters:
+  faultdomain: host
+  replication: "1"
+  blocksize: "512"
+provisioner: robin
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+allowVolumeExpansion: true
+
+---
+apiVersion: cdi.kubevirt.io/v1beta1
+kind: StorageProfile
+metadata:
+  name: robin-vm-repl-1-block-immediate
+spec:
+  claimPropertySets:
+  - accessModes:
+    - ReadWriteMany
+    volumeMode: Block
+
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
   name: robin-repl-2
 parameters:
   replication: "2"

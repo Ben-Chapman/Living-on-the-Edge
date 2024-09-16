@@ -8,7 +8,7 @@ spec:
   osType: Windows
   compute:
     cpu:
-      vcpus: 4
+      vcpus: 2
     memory:
       capacity: 8Gi
   disks:
@@ -20,33 +20,27 @@ spec:
   interfaces:
   - default: true
     name: eth0
-    model: e1000
+    # model: e1000
     networkName: pod-network
 ---
-apiVersion: vm.cluster.gke.io/v1
-kind: VirtualMachineDisk
+apiVersion: v1
+kind: Service
 metadata:
-  name: haiku
+  name: remote-access-to-haiku
   namespace: vms
 spec:
-  size: 10Gi
-  storageClassName: robin-vm-repl-2-block-immediate
-
-# ---
-# apiVersion: v1
-# kind: Service
-# metadata:
-#   name: ssh-to-vm
-#   namespace: vms
-# spec:
-#   type: LoadBalancer
-#   ports:
-#   - name: ssh
-#     port: 22
-#     protocol: TCP
-#     targetPort: 22
-#   selector:
-#     app: haiku
+  type: ClusterIP
+  ports:
+  - name: ssh
+    port: 22
+    protocol: TCP
+    targetPort: 22
+  - name: vnc
+    port: 5900
+    protocol: TCP
+    targetPort: 5900
+  selector:
+    kubevirt/vm: haiku
 
 # ---
 # apiVersion: vm.cluster.gke.io/v1

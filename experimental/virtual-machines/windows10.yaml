@@ -18,27 +18,6 @@ spec:
   - default: true
     name: eth0
     networkName: pod-network
-
-# ---
-# apiVersion: kubevirt.io/v1
-# kind: VirtualMachineInstance
-# metadata:
-#   name: windows10
-#   namespace: vms
-# spec:
-#   domain:
-#     devices:
-#       tpm:
-#         persistent: true
-#     features:
-#       acpi:
-#         enabled: true
-#   evictionStrategy: LiveMigrate
-
-
-
-
-
 ---
 
 apiVersion: v1
@@ -47,18 +26,15 @@ metadata:
   name: remote-access-to-windows10
   namespace: vms
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
-  - port: 3389
+  - name: rdp-tcp
+    port: 3389
     protocol: TCP
     targetPort: 3389
   - name: rdp-udp
     port: 3389
     protocol: UDP
-  #   targetPort: 3389
-  # - name: ssh
-  #   port: 22
-  #   protocol: TCP
-  #   targetPort: 22
+    targetPort: 3389
   selector:
     kubevirt/vm: windows10

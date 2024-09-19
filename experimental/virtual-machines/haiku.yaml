@@ -41,3 +41,21 @@ spec:
     targetPort: 5900
   selector:
     kubevirt/vm: haiku
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: haiku-webserver
+  namespace: vms
+  annotations:
+    metallb.universe.tf/loadBalancerIPs: 10.223.172.246
+spec:
+  type: LoadBalancer
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    kubevirt/vm: haiku

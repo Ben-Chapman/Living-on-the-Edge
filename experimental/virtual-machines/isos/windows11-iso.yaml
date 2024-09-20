@@ -1,0 +1,13 @@
+apiVersion: vm.cluster.gke.io/v1
+kind: VirtualMachineDisk
+metadata:
+  name: windows11-iso
+  namespace: vms
+spec:
+  source:
+    gcs:
+      url: gs://living-on-the-edge-vm-images/isos/Win11_23H2_English_x64v2.iso
+      secretRef: vm-image-importer
+  size: 10Gi
+  storageClassName: robin-vm-repl-2-block-immediate
+  diskType: cdrom

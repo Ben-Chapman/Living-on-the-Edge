@@ -1,0 +1,13 @@
+apiVersion: vm.cluster.gke.io/v1
+kind: VirtualMachineDisk
+metadata:
+  name: windowsxp-iso
+  namespace: vms
+spec:
+  source:
+    gcs:
+      url: gs://living-on-the-edge-vm-images/isos/en_windows_xp_professional_with_service_pack_3_x86_cd_vl_x14-73974.iso
+      secretRef: vm-image-importer
+  size: 1Gi
+  storageClassName: robin-vm-repl-2-block-immediate
+  diskType: cdrom

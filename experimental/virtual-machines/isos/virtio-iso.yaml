@@ -1,0 +1,13 @@
+apiVersion: vm.cluster.gke.io/v1
+kind: VirtualMachineDisk
+metadata:
+  name: fedora-virtio-driver
+  namespace: vms
+spec:
+  size: 1Gi
+  source:
+    gcs:
+      url: gs://living-on-the-edge-vm-images/isos/virtio-win-0.1.262.iso
+      secretRef: vm-image-importer
+  storageClassName: robin-vm-repl-2-block-immediate
+  diskType: cdrom

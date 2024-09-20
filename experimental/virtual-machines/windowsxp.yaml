@@ -1,66 +1,114 @@
-apiVersion: vm.cluster.gke.io/v1
-kind: VirtualMachine
+# https://kevinlocke.name/bits/2021/12/10/windows-11-guest-virtio-libvirt/
+# https://pve.proxmox.com/wiki/Windows_VirtIO_Drivers
+# https://www.tomshardware.com/how-to/install-windows-11-without-microsoft-account
+
+apiVersion: kubevirt.io/v1
+kind: VirtualMachineInstance
 metadata:
   name: windowsxp
   namespace: vms
 spec:
-  autoRestartOnConfigurationChange: true
-  osType: Windows
-  compute:
-    machineChipSet: q35
+  domain:
+    firmware:
+      bootloader:
+        bios: {}
     cpu:
-      vcpus: 1
-    memory:
-      capacity: 2Gi
-  disks:
-  # - boot: true
-    # driver: sata
-  - virtualMachineDiskName: windowsxp
-    autoDelete: false
-  - virtualMachineDiskName: windowsxp-iso
-    boot: true
-  interfaces:
-  - default: true
-    name: eth0
-    # model: e1000
-    networkName: pod-network
+      cores: 1
+      model: host-model
+      sockets: 1
+      threads: 1
+    # machine:
+    #   type: pc-q35
+    devices:
+      useVirtioTransitional: true
+      disks:
+      - name: disk0
+        bootOrder: 1
+        disk:
+          bus: virtio
+        serial: windowsxp-boot
+      - name: disk1
+        bootOrder: 2
+        cdrom:
+          # bus: virtio
+          readonly: true
+          tray: closed
+        serial: windowsxp-iso
+        - name: disk2
+          bootOrder: 3
+          cdrom:
+            bus: sata
+            readonly: true
+            tray: closed
+          serial: virtio-driver
+      interfaces:
+      - macAddress: f8:8f:ca:00:00:01
+        masquerade: {}
+        name: eth0
+    features:
+      acpi:
+        enabled: false
+    resources:
+      requests:
+        memory: 2G
+  evictionStrategy: LiveMigrate
+  networks:
+  - name: eth0
+    pod: {}
+  volumes:
+  - dataVolume:
+      name: windowsxp-boot
+    name: disk0
+  - dataVolume:
+      name: windowsxp-iso
+    name: disk1
+  - dataVolume:
+      name: fedora-virtio-driver
+    name: disk2
+
 ---
-apiVersion: vm.cluster.gke.io/v1
-kind: VirtualMachineDisk
+apiVersion: v1
+kind: Service
 metadata:
-  name: windowsxp
+  name: remote-access-to-windowsxp
   namespace: vms
 spec:
-  size: 10Gi
-  storageClassName: robin-vm-repl-2-block-immediate
+  type: ClusterIP
+  ports:
+  - name: rdp-tcp
+    port: 3389
+    protocol: TCP
+    targetPort: 3389
+  - name: rdp-udp
+    port: 3389
+    protocol: UDP
+    targetPort: 3389
+  selector:
+    vm.kubevirt.io/name: windowsxp
 
 # ---
-# apiVersion: v1
-# kind: Service
-# metadata:
-#   name: ssh-to-vm
-#   namespace: vms
-# spec:
-#   type: LoadBalancer
-#   ports:
-#   - name: ssh
-#     port: 22
-#     protocol: TCP
-#     targetPort: 22
-#   selector:
-#     app: windowsxp
-
----
 # apiVersion: vm.cluster.gke.io/v1
 # kind: VirtualMachineDisk
 # metadata:
-#   name: virtio-driver
+#   name: windowsxp-boot
+#   namespace: vms
+# spec:
+#   size: 32Gi
+#   storageClassName: robin-vm-repl-2-block-immediate
+
+
+# ---
+# apiVersion: vm.cluster.gke.io/v1
+# kind: VirtualMachineDisk
+# metadata:
+#   name: fedora-virtio-driver
 #   namespace: vms
 # spec:
 #   size: 1Gi
 #   source:
-#     registry:
-#       url: docker://quay.io/kubevirt/virtio-container-disk:latest
+#     gcs:
+#       url: gs://living-on-the-edge-vm-images/isos/virtio-win-0.1.262.iso
+#       secretRef: vm-image-importer
 #   storageClassName: robin-vm-repl-2-block-immediate
 #   diskType: cdrom
 
@@ -73,8 +121,8 @@ spec:
 # spec:
 #   source:
 #     gcs:
-#       url: gs://living-on-the-edge-vm-images/isos/en_windows_xp_professional_with_service_pack_3_x86_cd_vl_x14-73974.iso
+#       url: gs://living-on-the-edge-vm-images/isos/Win11_23H2_English_x64v2.iso
 #       secretRef: vm-image-importer
-#   size: 1Gi
+#   size: 10Gi
 #   storageClassName: robin-vm-repl-2-block-immediate
 #   diskType: cdrom

@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: logs-generator
+  name: logs-generator
+  namespace: default
+spec:
+  containers:
+  - name: logs-generator
+    image: gcr.io/google_containers/logs-generator:v0.1.1
+
+    env:
+    - name: LOGS_GENERATOR_LINES_TOTAL
+      value: "6000"
+    - name: LOGS_GENERATOR_DURATION
+      value: 60m
+    resources: {}
+  restartPolicy: Never

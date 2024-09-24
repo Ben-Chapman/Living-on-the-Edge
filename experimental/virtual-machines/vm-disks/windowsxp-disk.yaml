@@ -4,5 +4,9 @@ metadata:
   name: windowsxp-boot
   namespace: vms
 spec:
+  source:
+    gcs:
+      url: gs://living-on-the-edge-vm-images/winxp.qcow2
+      secretRef: vm-image-importer
   size: 10Gi
   storageClassName: robin-vm-repl-2-block-immediate

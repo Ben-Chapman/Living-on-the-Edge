@@ -1,0 +1,9 @@
+apiVersion: vm.cluster.gke.io/v1
+kind: VirtualMachineBackupRequest
+metadata:
+  name: haiku-backup
+  namespace: vms
+spec:
+  vmBackupPlanTemplate: default-backup-plan-template
+  virtualMachine: haiku
+  vmBackupName: haiku-backup

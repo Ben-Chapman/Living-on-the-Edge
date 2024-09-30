@@ -1,0 +1,7 @@
+apiVersion: vm.cluster.gke.io/v1
+kind: VirtualMachineBackupPlanTemplate
+metadata:
+  name: default-backup-plan-template
+  namespace: vms
+spec:
+  backupRepository: vm-backup-repo

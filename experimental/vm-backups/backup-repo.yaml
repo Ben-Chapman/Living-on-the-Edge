@@ -1,0 +1,19 @@
+apiVersion: backup.gdc.goog/v1
+kind: BackupRepository
+metadata:
+  name: "vm-backup-repo"
+spec:
+  secretReference:
+    namespace: vms
+    name: gcs-hmac-secret
+  endpoint: "https://storage.googleapis.com"
+  type: "S3"
+  s3Options:
+    bucket: living-on-the-edge-vm-backups
+    region: "us-central1"
+    forcePathStyle: true
+  importPolicy: "ReadWrite"
+  # If the storage bucket that it is initialized has already been claimed by a different
+  # BackupRepository, this BackupRepository will claim ownership of the storage bucket
+  # force: true is used for testing and development.
+  force: true

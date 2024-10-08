@@ -1,0 +1,12 @@
+apiVersion: vm.cluster.gke.io/v1
+kind: VirtualMachineDisk
+metadata:
+  name: kdeneon
+  namespace: vms
+spec:
+  size: 20Gi
+  storageClassName: robin-vm-repl-2-block-immediate
+  source:
+    gcs:
+      url: gs://living-on-the-edge-vm-images/KDENeon.qcow2
+      secretRef: vm-image-importer

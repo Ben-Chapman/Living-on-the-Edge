@@ -15,24 +15,14 @@ spec:
     driver: virtio
     virtualMachineDiskName: kdeneon
   interfaces:
-  - default: true
-    name: eth0
+  - name: eth0
     networkName: pod-network
-
----
-
-apiVersion: vm.cluster.gke.io/v1
-kind: VirtualMachineDisk
-metadata:
-  name: kdeneon
-  namespace: vms
-spec:
-  size: 20Gi
-  storageClassName: robin-vm-repl-2-block-immediate
-  source:
-    gcs:
-      url: gs://living-on-the-edge-vm-images/KDENeon.qcow2
-      secretRef: vm-image-importer
+    default: true
+  - name: eth1
+    networkName: vlan-500
+    ipAddresses:
+      - 172.16.10.3/24
+    default: false
 
 ---
 apiVersion: v1

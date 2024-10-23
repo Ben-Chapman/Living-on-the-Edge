@@ -1,0 +1,18 @@
+apiVersion: networking.gke.io/v1
+kind: Network
+metadata:
+  name: vlan-500
+  annotations:
+    networking.gke.io/gdce-vlan-id: "500"
+    networking.gke.io/gdce-vlan-mtu: "1500"
+spec:
+  type: L2
+  externalDHCP4: false
+  nodeInterfaceMatcher:
+    interfaceName: gdcenet0.500
+  gateway4: 172.16.10.1
+  l2NetworkConfig:
+    prefixLength4: 24
+  dnsConfig:
+    nameservers:
+    - 172.16.10.1

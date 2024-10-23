@@ -21,7 +21,7 @@ spec:
       - name: disk0
         bootOrder: 1
         disk:
-          bus: virtio
+          bus: scsi
         serial: windowsxp-boot
       interfaces:
       - macAddress: f8:8f:ca:00:00:01

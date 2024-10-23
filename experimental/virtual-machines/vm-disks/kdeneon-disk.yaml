@@ -4,7 +4,7 @@ metadata:
   name: kdeneon
   namespace: vms
 spec:
-  size: 20Gi
+  size: 25Gi
   storageClassName: robin-vm-repl-2-block-immediate
   source:
     gcs:

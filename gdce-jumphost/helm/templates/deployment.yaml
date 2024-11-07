@@ -42,8 +42,7 @@ spec:
         volumeMounts:
         - name: ssh-keys
           # Mount the authorized_keys ConfigMap into the Pod
-          mountPath: "/home/{{ .Values.jumphostUsername }}/.ssh/authorized_keys"
-          subPath: authorized_keys
+          mountPath: "/home/{{ .Values.jumphostUsername }}/.ssh"
       volumes:
       - name: ssh-keys
         configMap:

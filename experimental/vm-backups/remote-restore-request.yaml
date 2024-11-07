@@ -1,0 +1,10 @@
+apiVersion: vm.cluster.gke.io/v1
+kind: VirtualMachineRestoreRequest
+metadata:
+  name: haiku-restore
+  namespace: vms
+spec:
+  vmBackup: haiku-backup
+  restoreName: haiku-backup-restore
+  restoredResourceName: haiku-backup-restore
+  restoredResourceDescription: "haiku restore"

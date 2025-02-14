@@ -24,7 +24,7 @@ if [[ "$confirmation" == "y" ]]; then
   if [ $? -eq 0 ]; then
     END_TIME=$(date +%s)
 
-    echo -e "\n\nExport completed successfully 🎊
+    echo -e "\n\n🎊 Export completed successfully 🎊
 
 Time taken: $(( ${END_TIME} - ${START_TIME} )) seconds
 Local Disk Size:  $(echo ${VMDISK_INFO} |cut -d ' ' -f 3-)
@@ -37,7 +37,3 @@ elif [[ "$confirmation" == "n" ]]; then
 else
   echo "Invalid input. Please enter 'y' or 'n'."
 fi
-
-function print_errors() {
-
-}

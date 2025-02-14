@@ -24,8 +24,11 @@ rules:
     resources:
       - pods/portforward
       - pods/exec
+      - pods
     verbs:
       - 'create'
+      - 'update'
+      - 'attach'
 
   - apiGroups:
       - 'subresources.kubevirt.io'

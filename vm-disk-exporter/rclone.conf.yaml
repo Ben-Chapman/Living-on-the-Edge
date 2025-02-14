@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rclone-config
+data:
+  rclone.conf: |
+   [minio]
+    type = s3
+    provider = Minio
+    access_key_id = xI7GH5ZVku7zgi0aA
+    secret_access_key = Uj2r3njNOoI5rXYWvd1h0ee6tIKCmRFP
+    endpoint = http://10.10.0.10:9000
+    region = us-nj1
+
+    [gcs]
+    type = google cloud storage
+    project_number = 2166860519
+    location = us-central1
+    storage_class = REGIONAL
+    bucket_policy_only = true
+    access_token = ya29.c.c0ASRK0GbAFEewXD

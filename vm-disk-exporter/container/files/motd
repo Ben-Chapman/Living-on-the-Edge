@@ -1,0 +1,45 @@
+#!/bin/bash
+echo "
+                     .--------------------------------.
+                    | .-----------------------------. |
+                    | | ____   ____    ____    ____ | |     +++++++++++
+                    | ||_  _| |_  _|  |_   \  /   _|| |     +          +
+                    | |  \ \   / /      |   \/   |  | |     +     ++++  +
+                    | |   \ \ / /       | |\  /| |  | |     +     +   +  +
+                    | |    \ ' /       _| |_\/_| |_ | |     +     +    +  +
+                    | |     \_/       |_____||_____|| |     +     +     +  +
+                    | |                             | |     +     +++++++  +
+                    | '-----------------------------' |     +              +
+                     '--------------------------------'     +              +
+=========================================================== ++++++++++++++++
+        +++        +++                                 +++           +++
+      +     +    +     +                             +     +       +     +
+     +       +  +       +                           +       +     +       +
+       +    +    +     +                             +     +       +     +
+        +++        +++                                 +++           +++
+
+
+
+Welcome to the GDC VM Disk Exporter!
+
+To get started:
+- Run ./vm-disk-export.sh to start an automated export of the ${PVC_NAME} PV mounted to /dev/vmdisk
+
+You can also:
+- Use the rclone command to explore and validate your rclone remote configuration.
+  If needed you can edit the Rclone remote used by ./vm-disk-export.sh by adjusting
+  the RCLONE_REMOTE_PATH environment variable.
+
+- Explore some limited information about the QEMU disk image mounted to /dev/vmdisk:
+  qemu-img -f raw /dev/vmdisk
+  fdisk -l /dev/vmdisk
+
+- Create a local, sparse export of the QEMU disk image within /dev/vmdisk:
+  qemu-img convert -p -O qcow2 /dev/vmdisk /${PVC_NAME}.qcow2
+
+  Use with caution though! This Pod only has $(df -h / |tail -1 |awk '{print $4}') of free disk space.
+  Once you have a local sparse image, you can manually sync it to a remote
+  destination using rclone, rsync, or the file transfer tool of your choice.
+
+- Display this file again by executing /etc/motd
+"

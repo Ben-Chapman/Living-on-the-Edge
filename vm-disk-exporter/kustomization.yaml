@@ -1,0 +1,56 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: vms
+
+patches:
+  - patch: |-
+      - op: add
+        path: /spec/containers/0/image
+        ###
+        # Provide a valid container image name
+        ###
+        value: us-central1-docker.pkg.dev/living-on-the-edge/gdce-repo/vm-disk-exporter:dev
+
+      - op: replace
+        path: /spec/volumes/0/persistentVolumeClaim/claimName
+        ###
+        # Provide the name of the PVC you wish to export. Ensure the &pvc-name anchor
+        # remains in place, as it's used elsewhere in this file.
+        ###
+        value: &pvc-name windows11-boot
+
+      - op: add
+        path: /spec/containers/0/env/-
+        value:
+          name: REMOTE_FILENAME
+          ###
+          # Provide a remote file name for the exported VM image.
+          # If this value is left blank, the remote filename will be $pvc-name.raw
+          ###
+          value: ""
+
+      - op: add
+        path: /spec/containers/0/env/-
+        value:
+          name: RCLONE_REMOTE_PATH
+          ###
+          # Provide a valid Rclone remote path: https://rclone.org/docs/#syntax-of-remote-paths
+          ###
+          value: minio:vm-disk-images-from-rclone
+
+      ###
+      # No need to modify anything below this line
+      ###
+      - op: add
+        path: /spec/containers/0/env/-
+        value:
+          name: PVC_NAME
+          value: *pvc-name
+
+    target:
+      kind: Pod
+
+resources:
+- disk-exporter.yaml
+- rclone.conf.yaml

@@ -9,7 +9,7 @@ spec:
   - name: vm-disk-explorer
     image: imageNamePlaceholder
     command: ["sleep", "infinity"]
-    imagePullPolicy: Always
+    imagePullPolicy: IfNotPresent
     resources: {}
     volumeDevices:
     - name: virtualmachine-volume

@@ -52,5 +52,5 @@ patches:
       kind: Pod
 
 resources:
-- disk-exporter.yaml
+- vm-disk-exporter.yaml
 - rclone.conf.yaml

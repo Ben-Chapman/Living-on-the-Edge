@@ -18,7 +18,8 @@ This solution uses the [QEMU Disk Network Block Device Server](https://www.qemu.
   - `docker build -t <tag> ./container`
 - Push the container image to an image registry of your choosing. For example:
   - `docker push us-central1-docker.pkg.dev/<gcp project>/<artifact registry repo>/<container name:tag>`
-- Edit the Kustomize [kustomization.yaml](kustomization.yaml) file. All configuration items which need to be modified are exposed through Kustomize, so there should be no need to directly edit the Pod manifest file for this application.
+- Edit the Kustomize [kustomization.yaml](kustomization.yaml) file.
+  - All configuration items which need to be modified are exposed through Kustomize, so there should be no need to directly edit the Pod manifest file for this application.
   - Comments have been added throughout the Kustomization file, guiding you on what values to change.
 - Edit the [rclone.conf.yaml](rclone.conf.yaml) `ConfigMap`
   - This `ConfigMap` should contain a **valid** and tested Rclone configuration file. If needed, follow the Rclone [Configuration documentation](https://rclone.org/docs/#configure) to setup a new Rclone remote destination, and then copy the resulting rclone config into this `ConfigMap`. If needed you can use the previously built container image to configure a Rclone destination:

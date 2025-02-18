@@ -41,7 +41,7 @@ n/s/q>
 - To run the VM Disk Exporter on your GDC Connected cluster, you can simply `kubectl apply -k .` To monitor the deployment progress: `kubectl get pod vm-disk-exporter -n <namespace>`
 - Once the vm-disk-exporter Pod is in a Running state, you can exec into the running Pod to kick off the disk export command.
 -   `kubectl exec -it vm-disk-exporter -n <namespace> -- bash`
--   Once at a shell within the disk exporter Pod you can simply run `./vm-disk-export.sh`. This helper script will provide some information around the PersistentVolume that you are attempting to export, and wait for confirmation before progressing.
+-   Once at a shell within the `vm-disk-exporter` Pod you can simply run `./vm-disk-export.sh`. This helper script will provide some information around the PersistentVolume that you are attempting to export, and wait for confirmation before progressing.
 -   At the completion of an export, a brief summary will be provided. If all was successful, you now have a raw QEMU image stored within your Rclone destination.
 
 ## Advanced Functionality
@@ -53,8 +53,8 @@ Generation of a sparse disk image requires that you convert the existing raw-for
 
 ### Explore the remote destination with Rclone
 - The `rclone` cli is installed within the vm-disk-exporter container image, and your rclone.conf configuration file is mounted into this container. You should be able to use any [supported `rclone` command](https://rclone.org/docs/) to interact with your remote destination:
-- `rclone lsl $RCLONE_REMOTE_PATH`
-- `rclone size $RCLONE_REMOTE_PATH/disk-image-name.raw`
+  - `rclone lsl $RCLONE_REMOTE_PATH`
+  - `rclone size $RCLONE_REMOTE_PATH/disk-image-name.raw`
 
 ### Automatically exporting a VM Disk
 - Once you're comfortable with the configuration of the VM Disk Exporter, you can modify the `spec.containers.command` value in [vm-disk-exporter.yaml](vm-disk-exporter.yaml) to `command: ["yes", "|", "./vm-disk-exporter.sh", ";", "sleep", "infinity"]` and (re)deploy the vm-disk-exporter Pod. A better solution would be to update the [vm-disk-export.sh](container/files/vm-disk-export.sh) helper script to automatically kick off a VM Disk export, perhaps with a few additional sanity checks before doing so.

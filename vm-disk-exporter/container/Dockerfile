@@ -3,6 +3,7 @@ FROM alpine:latest
 RUN apk add --no-cache \
   bash \
   libnbd \
+  openssh \
   rclone \
   rsync \
   qemu-img

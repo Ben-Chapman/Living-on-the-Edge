@@ -12,8 +12,8 @@ ARG JUMPHOST_HOMEDIR=/home/$JUMPHOST_USERNAME
 # For the latest stable version:
 # kubectl: https://dl.k8s.io/release/stable.txt
 # virtctl: https://storage.googleapis.com/kubevirt-prow/release/kubevirt/kubevirt/stable.txt
-ARG KUBECTL_VERSION=1.31.1
-ARG VIRTCTL_VERSION=1.3.1
+ARG KUBECTL_VERSION=1.32.3
+ARG VIRTCTL_VERSION=1.5.0
 
 # Install some useful packages including:
 # ISC DNS tools (bind-tools)
@@ -28,6 +28,7 @@ RUN apk add --no-cache \
   mtr \
   openssh \
   openssh-server \
+  rsync \
   tmux \
   tzdata \
   vim \

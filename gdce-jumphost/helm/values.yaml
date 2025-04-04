@@ -12,9 +12,9 @@ jumphostUsername: jump
 
 # Container Image
 image:
-  repository: us-central1-docker.pkg.dev/living-on-the-edge/gdce-repo/gdce-jumphost/
+  repository: us-central1-docker.pkg.dev/living-on-the-edge/gdce-repo/
   name: *appname
-  tag: experimental
+  tag: '20250403'
   pullPolicy: Always
   pullSecret: artifact-registry
 
@@ -43,4 +43,4 @@ service:
   targetPort: 22
   # If loadBalancerIP is set, the service will be created with a static MetalLB IP addr
   # otherwise a VIP IP will be selected from the pool
-  loadBalancerIP: 10.223.172.245
+  loadBalancerIP: 192.168.88.66

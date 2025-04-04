@@ -1,0 +1,32 @@
+# Source:
+# https://cloud.google.com/kubernetes-engine/distributed-cloud/bare-metal/docs/how-to/cluster-dns
+
+apiVersion: networking.gke.io/v1alpha1
+kind: ClusterDNS
+metadata:
+  # Name must be "default"
+  name: default
+spec:
+  domains:
+    # For this domain and all subdomains (e.g. cloud.google.com) use these nameservers
+    # The trailing "." is required for all subdomains to use this config.
+  - name: google.com.
+    nameservers:
+    - serverIP: 10.10.0.10
+    queryLogging: true
+
+    # Only modify the nameservers for api.github.com, and don't log queries
+  - name: api.github.com
+    nameservers:
+    - serverIP: 10.10.0.10
+
+  # Change the default nameservers for all other traffic in the cluster, including k8s
+  # application traffic. This overrides the default nameservers of 8.8.8.8 and 8.8.4.4
+  upstreamNameservers:
+    - serverIP: 9.9.9.9
+    - serverIP: 149.112.112.112
+    - serverIP: 2620:fe::fe
+    - serverIP: 2620:fe::9
+
+  # Unless you use Private Google Access leave this as default, or remove this field
+  googleAccess: default

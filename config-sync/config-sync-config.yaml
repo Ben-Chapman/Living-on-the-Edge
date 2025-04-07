@@ -1,6 +1,6 @@
 #
 # Apply with:
-# gcloud beta container fleet config-management apply --membership=gdce-homelab \
+# gcloud beta container fleet config-management apply --membership=edge-homelab \
 # --config=config-sync-config.yaml --project=living-on-the-edge
 #
 applySpecVersion: 1
@@ -13,7 +13,6 @@ spec:
     syncRepo: https://github.com/Ben-Chapman/Living-on-the-Edge-Root-Sync.git
     syncRev: main
     secretType: token
-    # gcpServiceAccountEmail: EMAIL
-    # metricsGcpServiceAccountEmail: METRICS_EMAIL
     policyDir: config-sync/root-sync
     preventDrift: false # b/345455587#comment11
+    syncWait: 300  # Time in seconds, 5 minutes

@@ -14,7 +14,7 @@ spec:
   disks:
   - boot: true
     driver: sata
-    virtualMachineDiskName: haiku
+    virtualMachineDiskName: haiku-boot
     autoDelete: false
   # - virtualMachineDiskName: haiku-iso
   interfaces:
@@ -48,8 +48,8 @@ kind: Service
 metadata:
   name: haiku-webserver
   namespace: vms
-  annotations:
-    metallb.universe.tf/loadBalancerIPs: 10.223.172.246
+  # annotations:
+  #   metallb.universe.tf/loadBalancerIPs: 10.223.172.246
 spec:
   type: LoadBalancer
   ports:

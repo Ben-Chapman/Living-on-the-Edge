@@ -28,20 +28,6 @@ spec:
         disk:
           bus: virtio
         serial: windows11-boot
-      # - name: disk1
-      #   bootOrder: 2
-      #   cdrom:
-      #     bus: sata
-      #     readonly: true
-      #     tray: closed
-      #   serial: windows11-iso
-      # - name: disk2
-      #   bootOrder: 3
-      #   cdrom:
-      #     bus: sata
-      #     readonly: true
-      #     tray: closed
-      #   serial: virtio-driver
       interfaces:
       - macAddress: f8:8f:ca:00:00:01
         masquerade: {}
@@ -62,12 +48,6 @@ spec:
   - dataVolume:
       name: windows11-boot
     name: disk0
-  - dataVolume:
-      name: windows11-iso
-    name: disk1
-  - dataVolume:
-      name: fedora-virtio-driver
-    name: disk2
 
 ---
 apiVersion: v1

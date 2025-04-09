@@ -27,7 +27,7 @@ guacamoleName: guacamole-webapp
 guacamoleReplicas: 1
 guacamoleVipPort: 80
 guacamoleSourcePort: 8080
-guacamoleImage:  us-central1-docker.pkg.dev/living-on-the-edge/gdce-repo/guacamole/guacamole:experimental
+guacamoleImage:  us-central1-docker.pkg.dev/living-on-the-edge/gdce-repo/guacamole:20250408
 guacamoleEnv:
   GUACD_HOSTNAME: *guacdname
   GUACD_PORT: *guacdport

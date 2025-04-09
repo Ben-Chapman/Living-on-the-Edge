@@ -10,7 +10,7 @@ patches:
         ###
         # Provide a valid container image name
         ###
-        value: us-central1-docker.pkg.dev/living-on-the-edge/gdce-repo/vm-disk-exporter:dev
+        value: us-central1-docker.pkg.dev/living-on-the-edge/gdce-repo/vm-disk-exporter:20250409
 
       - op: replace
         path: /spec/volumes/0/persistentVolumeClaim/claimName

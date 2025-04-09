@@ -1,0 +1,12 @@
+apiVersion: vm.cluster.gke.io/v1
+kind: VirtualMachineDisk
+metadata:
+  name: windows10-boot
+  namespace: vms
+spec:
+  size: 30Gi
+  storageClassName: robin-vm-repl-2-block-immediate
+  source:
+    s3:
+      url: http://10.10.0.10:9000/vm-disk-images-from-rclone/windows10-boot.raw
+      secretRef: minio-secret

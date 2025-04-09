@@ -5,7 +5,7 @@
 # noop test to trigger GH Workflow
 
 apiVersion: v2
-name: GDCE-Jumphost
+name: gdce-jumphost
 description: A container-based SSH Jump host used to interact with the local cluster Kube API.
 
 # A chart can be either an 'application' or a 'library' chart.

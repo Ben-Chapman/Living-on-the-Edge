@@ -13,6 +13,6 @@ spec:
     syncRepo: https://github.com/Ben-Chapman/Living-on-the-Edge-Root-Sync.git
     syncRev: main
     secretType: token
-    policyDir: config-sync/root-sync
+    policyDir: root-sync
     preventDrift: false # b/345455587#comment11
     syncWait: 300  # Time in seconds, 5 minutes

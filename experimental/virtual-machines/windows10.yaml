@@ -19,11 +19,11 @@ spec:
   - name: eth0
     default: true
     networkName: pod-network
-  - name: eth1
-    networkName: vlan-500
-    ipAddresses:
-      - 172.16.10.2/24
-    default: false
+  # - name: eth1
+  #   networkName: vlan-500
+  #   ipAddresses:
+  #     - 172.16.10.2/24
+  #   default: false
 ---
 
 apiVersion: v1

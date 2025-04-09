@@ -7,6 +7,10 @@ spec:
   size: 25Gi
   storageClassName: robin-vm-repl-2-block-immediate
   source:
-    gcs:
-      url: gs://living-on-the-edge-vm-images/KDENeon.qcow2
-      secretRef: vm-image-importer
+    s3:
+        url: http://10.10.0.10:9000/vm-disk-images-from-rclone/kdeneon.raw
+        secretRef: minio-secret
+    # Google Cloud Storage import reference
+    # gcs:
+    #   url: gs://living-on-the-edge-vm-images/KDENeon.qcow2
+    #   secretRef: vm-image-importer

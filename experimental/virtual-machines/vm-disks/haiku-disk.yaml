@@ -6,3 +6,8 @@ metadata:
 spec:
   size: 10Gi
   storageClassName: robin-vm-repl-2-block-immediate
+  source:
+    s3:
+      # Pull image from Minio
+      url: http://10.10.0.10:9000/vm-disk-images-from-rclone/haiku.raw
+      secretRef: minio-secret

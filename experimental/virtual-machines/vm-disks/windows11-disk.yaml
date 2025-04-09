@@ -6,3 +6,7 @@ metadata:
 spec:
   size: 32Gi
   storageClassName: robin-vm-repl-2-block-immediate
+  source:
+    s3:
+      url: http://10.10.0.10:9000/vm-disk-images-from-rclone/windows11-boot.raw
+      secretRef: minio-secret

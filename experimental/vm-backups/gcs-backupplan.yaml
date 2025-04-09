@@ -1,0 +1,22 @@
+apiVersion: vm.cluster.gke.io/v1
+kind: VirtualMachineBackupPlan
+metadata:
+  name: vm-nightly-backup-schedule-to-gcs
+  namespace: vms
+spec:
+  backupConfig:
+    backupRepository: vm-backup-repo
+    backupScope:
+      selectedVirtualMachines:
+      # - resourceName: haiku
+      - resourceName: kdeneon
+      - resourceName: windows10
+      - resourceName: windows11
+    volumeStrategy: Portable
+  backupSchedule:
+    cronSchedule: 00 04 * * *
+    paused: false
+  retentionPolicy:
+    backupDeleteLockDays: 15
+    backupRetainDays: 30
+    locked: false

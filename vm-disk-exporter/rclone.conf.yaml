@@ -7,8 +7,8 @@ data:
    [minio]
     type = s3
     provider = Minio
-    access_key_id = xI7GH5ZVku7zgi0aA
-    secret_access_key = Uj2r3njNOoI5rXYWvd1h0ee6tIKCmRFP
+    access_key_id = xI7GH5ZdSOVku7zgi0aA
+    secret_access_key = Uj2r3njNOoI5rXYWvd1nYkkaABAh0ee6tIKCmRFP
     endpoint = http://10.10.0.10:9000
     region = us-nj1
 

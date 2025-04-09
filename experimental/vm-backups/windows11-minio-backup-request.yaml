@@ -1,0 +1,9 @@
+apiVersion: vm.cluster.gke.io/v1
+kind: VirtualMachineBackupRequest
+metadata:
+  name: windows11-backup-minio
+  namespace: vms
+spec:
+  vmBackupPlanTemplate: minio-backup-plan-template
+  virtualMachine: windows11
+  vmBackupName: windows11-backup-minio

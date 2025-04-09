@@ -1,0 +1,7 @@
+apiVersion: vm.cluster.gke.io/v1
+kind: VirtualMachineBackupPlanTemplate
+metadata:
+  name: minio-backup-plan-template
+  namespace: vms
+spec:
+  backupRepository: minio-backup-repo

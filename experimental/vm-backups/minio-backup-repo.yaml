@@ -1,0 +1,19 @@
+apiVersion: backup.gdc.goog/v1
+kind: BackupRepository
+metadata:
+  name: "minio-backup-repo"
+spec:
+  secretReference:
+    namespace: vms
+    name: minio-secret
+  endpoint: "http://10.10.0.10:9000"
+  type: "S3"
+  s3Options:
+    bucket: minio-backups
+    region: "us-nj1"
+    forcePathStyle: true
+  importPolicy: "ReadWrite"
+  # If the storage bucket that it is initialized has already been claimed by a different
+  # BackupRepository, this BackupRepository will claim ownership of the storage bucket
+  # force: true is used for testing and development.
+  force: true

@@ -1,0 +1,9 @@
+apiVersion: vm.cluster.gke.io/v1
+kind: VirtualMachineBackupRequest
+metadata:
+  name: windows10-backup-minio
+  namespace: vms
+spec:
+  vmBackupPlanTemplate: minio-backup-plan-template
+  virtualMachine: windows10
+  vmBackupName: windows10-backup-minio

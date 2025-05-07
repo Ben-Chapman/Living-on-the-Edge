@@ -1,13 +1,89 @@
 apiVersion: vm.cluster.gke.io/v1
 kind: VirtualMachineDisk
 metadata:
-  name: fedora-virtio-driver
+  name: virtio-drivers-v81
   namespace: vms
 spec:
-  size: 1Gi
+  size: 75Mi
+  source:
+    gcs:
+      url: gs://living-on-the-edge-vm-images/isos/virtio-win-0.1-81.iso
+      secretRef: vm-image-importer
+  storageClassName: robin-vm-repl-2-block-immediate
+  diskType: cdrom
+
+---
+apiVersion: vm.cluster.gke.io/v1
+kind: VirtualMachineDisk
+metadata:
+  name: virtio-drivers-v100
+  namespace: vms
+spec:
+  size: 70Mi
+  source:
+    gcs:
+      url: gs://living-on-the-edge-vm-images/isos/virtio-win-0.1-100.iso
+      secretRef: vm-image-importer
+  storageClassName: robin-vm-repl-2-block-immediate
+  diskType: cdrom
+
+---
+apiVersion: vm.cluster.gke.io/v1
+kind: VirtualMachineDisk
+metadata:
+  name: virtio-drivers-v160
+  namespace: vms
+spec:
+  size: 350Mi
+  source:
+    gcs:
+      url: gs://living-on-the-edge-vm-images/isos/virtio-win-0.1.160.iso
+      secretRef: vm-image-importer
+  storageClassName: robin-vm-repl-2-block-immediate
+  diskType: cdrom
+
+---
+apiVersion: vm.cluster.gke.io/v1
+kind: VirtualMachineDisk
+metadata:
+  name: virtio-drivers-v173
+  namespace: vms
+spec:
+  size: 400Mi
+  source:
+    gcs:
+      url: gs://living-on-the-edge-vm-images/isos/virtio-win-0.1.173.iso
+      secretRef: vm-image-importer
+  storageClassName: robin-vm-repl-2-block-immediate
+  diskType: cdrom
+
+---
+
+apiVersion: vm.cluster.gke.io/v1
+kind: VirtualMachineDisk
+metadata:
+  name: virtio-drivers-v262
+  namespace: vms
+spec:
+  size: 735Mi
   source:
     gcs:
       url: gs://living-on-the-edge-vm-images/isos/virtio-win-0.1.262.iso
+      secretRef: vm-image-importer
+  storageClassName: robin-vm-repl-2-block-immediate
+  diskType: cdrom
+
+---
+apiVersion: vm.cluster.gke.io/v1
+kind: VirtualMachineDisk
+metadata:
+  name: virtio-drivers-v271
+  namespace: vms
+spec:
+  size: 735Mi
+  source:
+    gcs:
+      url: gs://living-on-the-edge-vm-images/isos/virtio-win-0.1.271.iso
       secretRef: vm-image-importer
   storageClassName: robin-vm-repl-2-block-immediate
   diskType: cdrom

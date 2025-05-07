@@ -1,0 +1,51 @@
+# To enable Windows Update: https://superuser.com/a/1632323
+apiVersion: vm.cluster.gke.io/v1
+kind: VirtualMachine
+metadata:
+  name: windows7
+  namespace: vms
+spec:
+  osType: Windows
+  autoRestartOnConfigurationChange: true
+  compute:
+    cpu:
+      vcpus: 4
+    memory:
+      capacity: 8Gi
+  disks:
+  - virtualMachineDiskName: windows7-boot
+    boot: true
+    driver: sata
+  - virtualMachineDiskName: virtio-drivers-v160
+    cdrom:
+      ejected: false
+  interfaces:
+  - name: eth0
+    networkName: pod-network
+    default: true
+    model: e1000
+  # - name: eth1
+  #   networkName: vlan-500
+  #   ipAddresses:
+  #     - 172.16.10.3/24
+  #   default: false
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: remote-access-to-windows7
+  namespace: vms
+spec:
+  type: ClusterIP
+  ports:
+  - name: rdp-tcp
+    port: 3389
+    protocol: TCP
+    targetPort: 3389
+  - name: rdp-udp
+    port: 3389
+    protocol: UDP
+    targetPort: 3389
+  selector:
+    kubevirt/vm: windows7

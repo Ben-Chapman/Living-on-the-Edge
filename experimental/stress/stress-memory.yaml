@@ -1,0 +1,53 @@
+# Sources:
+# https://wiki.ubuntu.com/Kernel/Reference/stress-ng
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: stress
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: stress-memory
+  name: stress-memory
+  namespace: stress
+spec:
+  replicas: 200
+  selector:
+    matchLabels:
+      app: stress-memory
+  template:
+    metadata:
+      labels:
+        app: stress-memory
+    spec:
+      containers:
+      - name: stress-ng-memory
+        image: ghcr.io/colinianking/stress-ng
+        args:
+        # - "--brk=2"
+        # - "--stack=2"
+        # - "--bigheap=2"
+
+        # Two workers
+        - "--bigheap=2"
+
+        # Grow heap up to N bytes in total
+        - "--bigheap-bytes=2048000000"  # 2GB
+
+        # Grow heap by N bytes per iteration
+        - "--bigheap-growth=16384"
+
+        # - "--timeout=300s"
+
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "2048Mi"
+            cpu: "500m"

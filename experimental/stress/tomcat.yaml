@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: tomcat-memory
+  name: tomcat-memory
+  namespace: stress
+spec:
+  replicas: 125
+  selector:
+    matchLabels:
+      app: tomcat-memory
+  template:
+    metadata:
+      labels:
+        app: tomcat-memory
+    spec:
+      containers:
+      - name: tomcat-memory
+        image: tomcat:latest
+        env:
+        - name: CATALINA_OPTS
+          value: "-Xms1024m -Xmx1024m -XX:+AlwaysPreTouch"
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: "1024Mi"
+            cpu: "100m"
+          limits:
+            memory: "1200Mi"
+            cpu: "250m"

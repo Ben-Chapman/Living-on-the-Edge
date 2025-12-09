@@ -1,0 +1,7 @@
+[project]
+  name            = "dns-monitor"
+  version         = "0.1.0"
+  description     = "A flexible, asynchronous script for monitoring and debugging DNS resolution."
+  readme          = "README.md"
+  requires-python = ">=3.12"
+  dependencies    = ["click", "dnspython", "httpx"]

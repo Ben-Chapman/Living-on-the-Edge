@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dns-monitor-config
+  labels:
+    app: dns-monitor
+data:
+  # Comma-separated list of domains to query.
+  TARGET_DOMAINS: "google.com,github.com,kubernetes.default.svc.cluster.local"
+
+  # Specific upstream DNS server IP. Leave empty to use pod's default from /etc/resolv.conf.
+  DNS_SERVER: ""
+
+  # How often (in seconds) to run a batch of queries.
+  CHECK_INTERVAL: "60"
+
+  # How many concurrent DNS requests to make for each domain.
+  CONCURRENT_REQUESTS: "1"
+
+  # Introduce a random delay (jitter) to each request, up to this many seconds.
+  # Only used when CONCURRENT_REQUESTS > 1
+  JITTER: "0.5"
+
+  # The amount of time (in seconds) to wait for a DNS response. 2 seconds is CoreDNS default.
+  QUERY_TIMEOUT: "2.0"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dns-monitor
+  labels:
+    app: dns-monitor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dns-monitor
+  template:
+    metadata:
+      labels:
+        app: dns-monitor
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+      containers:
+      - name: dns-monitor
+        image: your-registry/dns-monitor:latest
+        imagePullPolicy: IfNotPresent
+        # The script is configured entirely via environment variables
+        envFrom:
+        - configMapRef:
+            name: dns-monitor-config

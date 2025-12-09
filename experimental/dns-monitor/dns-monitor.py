@@ -1,13 +1,3 @@
-#!/usr/bin/env -S uv run --script
-#
-# /// script
-# requires-python = ">=3.12"
-# dependencies = [
-#     "click",
-#     "dnspython",
-# ]
-# ///
-
 import asyncio
 import logging
 import random
@@ -66,7 +56,7 @@ async def make_dns_requests(
     """
     The main async event loop.
     """
-    logger.info("Starting DNS Monitor...")
+    logger.info("Starting DNS Monitor... 👀")
 
     domains_list = [d.strip() for d in domains.split(",") if d.strip()]
     target_name = dns_server if dns_server else "Using system default nameserver"
@@ -79,7 +69,13 @@ async def make_dns_requests(
     logger.info(f"Request Jitter: {jitter} seconds")
 
     async def query_with_jitter(domain, dns_server, timeout):
-        """Adds a random delay before querying DNS to introduce jitter."""
+        """Adds a random delay before querying a DNS server.
+
+        A useful test case for a DNS server is to make multiple simultaneous requests for the same domain as this
+        more closely resembles real-world workload behavior. Rather than fire N requests for the same domain
+        simultaneously, the jitter value introduces some variability in the timing of the request, in an attempt to
+        more accurately reflect real-world conditions.
+        """
         await asyncio.sleep(random.uniform(0, jitter))
         await query_dns(domain, dns_server, timeout)
 
@@ -116,14 +112,14 @@ async def make_dns_requests(
     envvar="CHECK_INTERVAL",
     default=60,
     type=int,
-    help="How often to run.",
+    help="How often to run in seconds.",
 )
 @click.option(
     "--concurrent-requests",
     envvar="CONCURRENT_REQUESTS",
     default=1,
     type=int,
-    help="How many concurrent DNS requests to make.",
+    help="The number of concurrent DNS requests to make.",
 )
 @click.option(
     "--jitter",
@@ -148,16 +144,12 @@ def cli(domains, dns_server, interval, concurrent_requests, jitter, timeout):
 
     Args:
         domains (str): Comma-separated list of domains to query.
-        dns_server (str, optional): Specific upstream DNS server IP to use.
-                                     Defaults to system-defined nameservers if None.
+        dns_server (str, optional): Specific upstream DNS server IP to use. Defaults to system-defined nameservers if None.
         interval (int): How often (in seconds) to run a batch of DNS queries.
-        concurrent_requests (int): The number of concurrent DNS requests to make for each domain
-                                   in each interval.
-        jitter (float): The maximum number of seconds to introduce a random delay before
-                        each individual DNS request. This helps to prevent thundering herds
-                        and distribute the load. Defaults to 0.0 (no jitter).
-        timeout (float): The amount of time (in seconds) to wait for a response from the
-                         upstream DNS server for a single query.
+        concurrent_requests (int): The number of concurrent DNS requests to make for each domain in each interval.
+        jitter (float): The maximum number of seconds to introduce a random delay before each individual DNS request.
+        This helps to prevent thundering herds and distribute the load. Defaults to 0.0 (no jitter).
+        timeout (float): The amount of time (in seconds) to wait for a response from the upstream DNS server for a single query.
     """
     try:
         asyncio.run(

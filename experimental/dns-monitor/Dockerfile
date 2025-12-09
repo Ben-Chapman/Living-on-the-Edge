@@ -14,10 +14,12 @@ WORKDIR /home/dnsmonitor
 COPY --chown=dnsmonitor:dnsmonitor --from=build /root/.local/bin/ .local/bin/
 
 ENV PATH="/home/dnsmonitor/.local/bin:$PATH"
+# Enable log messages to be immediately dumped to the stderr/stdout instead of being buffered
+ENV PYTHONUNBUFFERED=1
 
-COPY --chown=dnsmonitor:dnsmonitor dns_monitor.py pyproject.toml ./
+COPY --chown=dnsmonitor:dnsmonitor dns-monitor.py pyproject.toml ./
 
 # Install required packages
 RUN uv sync
 
-ENTRYPOINT [ "uv", "run", "dns_monitor.py" ]
+ENTRYPOINT [ "uv", "run", "dns-monitor.py" ]

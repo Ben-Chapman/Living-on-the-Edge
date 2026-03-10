@@ -1,0 +1,28 @@
+apiVersion: vm.cluster.gke.io/v1
+kind: VirtualMachineDisk
+metadata:
+  name: solaris10-iso
+  namespace: vms
+spec:
+  source:
+    s3:
+        url: http://10.10.0.10:9000/vm-disk-images-from-rclone/sun-microsystems-solaris-10-509-intel.iso
+        secretRef: minio-secret
+  size: 2.5Gi
+  storageClassName: robin-vm-repl-2-block-immediate
+  diskType: cdrom
+
+---
+apiVersion: vm.cluster.gke.io/v1
+kind: VirtualMachineDisk
+metadata:
+  name: solaris10-virtio
+  namespace: vms
+spec:
+  source:
+    s3:
+        url: http://10.10.0.10:9000/vm-disk-images-from-rclone/vioblk-1.3-itu.iso
+        secretRef: minio-secret
+  size: 1Mi
+  storageClassName: robin-vm-repl-2-block-immediate
+  diskType: cdrom

@@ -1,0 +1,64 @@
+# https://web.archive.org/web/20171019173648/http://zaytsev.su/solaris-virtio/
+
+apiVersion: vm.cluster.gke.io/v1
+kind: VirtualMachine
+metadata:
+  name: solaris10
+  namespace: vms
+spec:
+  osType: Linux
+  autoRestartOnConfigurationChange: true
+  compute:
+    cpu:
+      vcpus: 4
+    memory:
+      capacity: 4Gi
+  disks:
+  - virtualMachineDiskName: solaris10-boot
+    boot: false
+    driver: scsi
+
+  - virtualMachineDiskName: solaris10-iso
+    boot: true
+    driver: sata
+
+  - virtualMachineDiskName: solaris10-virtio
+
+  interfaces:
+  - name: eth0
+    networkName: pod-network
+    default: true
+    model: e1000
+  # - name: eth1
+  #   networkName: vlan-500
+  #   ipAddresses:
+  #     - 172.16.10.3/24
+  #   default: false
+
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: remote-access-to-solaris10
+#   namespace: vms
+# spec:
+#   # type: LoadBalancer
+#   ports:
+#   - name: rdp-tcp
+#     port: 3389
+#     protocol: TCP
+#     targetPort: 3389
+#   - name: rdp-udp
+#     port: 3389
+#     protocol: UDP
+#     targetPort: 3389
+#   - name: ssh
+#     port: 22
+#     protocol: TCP
+#     targetPort: 22
+#   - name: vnc
+#     port: 5900
+#     protocol: TCP
+#     targetPort: 5900
+#   selector:
+#     kubevirt/vm: solaris10
